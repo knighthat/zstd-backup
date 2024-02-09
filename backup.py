@@ -1,90 +1,82 @@
-#!/usr/bin/python3
 import os
-from file import File
-from sys import argv, exit as code
-from re import match
-from datetime import datetime, timedelta as delta
-from unit_converter import BytesConverter
-from subprocess import run
+from datetime import datetime, timedelta
+
+import dir
+import logger
+
+today = datetime.today()
+time_format = "%Y-%b-%d %H-%M-%f"
 
 
-def abspath(path: str) -> str:
-    if path.startswith("~"):
-        path = os.path.expanduser(path)
-    if not path.startswith("/") or path.startswith("."):
-        path = os.path.join(os.curdir, path)
-    return os.path.abspath(path)
+class Backup:
 
+    def __init__(self, backup: list[str], destination: str, keep: int) -> None:
+        self._set_destination(destination)
+        self._set_children(backup)
+        self._set_keep(keep)
+        self.filename = f'{today.strftime(time_format)}.zstd'
 
-def set_destination() -> str:
-    while True:
-        user_dest = input("Where do you want to save this? ")
-        abs_path = abspath(user_dest)
-        if os.path.exists(abs_path):
-            if not os.path.isdir(abs_path):
-                print(f"{user_dest} is not a folder!")
+    def _set_destination(self, path: str) -> None:
+        if not path:
+            path = f'{os.curdir}/backups/'
+            logger.warn(f'Empty or null destination! Using {path}')
+
+        self.destination = dir.prep(path)
+
+    def _set_children(self, paths: list[str]) -> None:
+        self.children: list[str] = []
+
+        for p in paths:
+            path = dir.abspath(p)
+            if not os.path.exists(path):
+                logger.warn(f'{path} does not exist! Skipping...')
             else:
-                break
-        else:
-            print(f"{abs_path} does not exist!")
-    return user_dest
+                self.children.append(path)
+
+    def _set_keep(self, history: int) -> None:
+        result: int = 0
+        try:
+            if int(history) < 0:
+                logger.error(f'{history} is not a positive number!')
+                logger.error(f'Using default value: 0')
+            else:
+                result = history
+        except TypeError as e:
+            logger.exception(e)
+            logger.error(f'{history} is not a valid number!')
+            logger.error(f'Using default value: 0')
+
+        self.keep = result
+
+    def __len__(self) -> int:
+
+        size: int = 0
+        for file in self.children:
+            if os.path.isfile(file):
+                size += os.path.getsize(file)
+            elif os.path.isdir(file):
+                for root, dirs, names in os.walk(file):
+                    for filename in names:
+                        path = os.path.join(root, filename)
+                        size += os.path.getsize(path)
+
+        return size
 
 
-def include() -> list[str]:
-    incld_tmp = []
-    while True:
-        user_in = input("What file/folder shall be included? (Leave empty to end)")
-        if len(user_in) == 0:
-            break
-        abs_path = abspath(user_in)
-        incld_tmp.append(abs_path)
-    return incld_tmp
-
-def get_old_backups() -> list[str]:
-    backups = []
-    backup_name_format = r'^\w{3}-\d{2}-\d{4}.zstd'
-    for name in os.listdir(dest):
-        if match(backup_name_format, name):
-            backups.append(name)
-    return backups
+def parse_date(filename: str) -> datetime:
+    return datetime.strptime(filename.split('.')[0], time_format)
 
 
-def delete_overtime(backups: list[str], t: int = 90) -> None:
-    def parse_date(date: str) -> datetime:
-        if date.endswith("zstd"):
-            date = os.path.splitext(date)[0]
-        return datetime.strptime(date, "%b-%d-%Y")
+def del_old_backups(backups: list[str], days: int) -> None:
+    logger.info(f'Deleting old backups that were created {days} day(s) ago...')
+    if len(backups) == 0:
+        logger.info('No old backup found! Skipping this step...')
 
-    period = delta(days=t)
-    for name in backups:
-        if time_now - parse_date(name) > period:
-            os.remove(os.path.join(dest, name))
-            backups.remove(name)
-
-
-time_now = datetime.now()
-dest: str = abspath(argv[1]) if len(argv) >= 2 else set_destination()
-includes: list[str] = argv[2:] if len(argv) >= 3 else include()
-exceptions: list[str] = []
-
-
-if __name__ == '__main__':
-    old_backups = get_old_backups()
-    if len(old_backups) > 0:
-        delete_overtime(old_backups)
-
-    file = File(includes, dest, time_now)
-    exceptions.extend(file.verify_children())
-
-    dest_stat = os.statvfs(dest)
-    free_space = dest_stat.f_frsize * dest_stat.f_bavail
-    if free_space < file.size:
-        estimate_str = BytesConverter(file.size).__str__()
-        exceptions.append(f"Not enough space! Requires at least {estimate_str}")
-    else:
-        # tar -PI "zstd -19 -T0"
-        cmd = ["tar", "-PI", "zstd --ultra -22 -T0", "-cf", file.abspath(), " ".join(file.children)]
-        exit_code = run(cmd).returncode
-
-    print(f'Exit code: {exit_code}')
-    print(f"Exceptions: {exceptions}")
+    try:
+        for file in backups:
+            basename: str = dir.basename(file)
+            if today - parse_date(basename) > timedelta(days=days):
+                dir.delete(file)
+    except Exception as e:
+        logger.error(f'Error occurs while deleting old backups!')
+        logger.exception(e)
