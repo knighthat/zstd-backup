@@ -82,8 +82,10 @@ def abspath(path: str) -> str:
     if path.startswith('~'):
         logger.debug(f'Convert {path} to {os.path.expanduser(path)}')
         path = os.path.expanduser(path)
+    elif path.startswith('./'):
+        path = os.path.join(srcfile(), path[2:])
 
-    abspath = os.path.abspath(path)
+    abspath: str = os.path.abspath(path)
     logger.debug(f'Absolute path of {path} is {abspath}')
 
     return abspath
