@@ -1,0 +1,18 @@
+# Available levels: DEBUG, INFO, WARN, ERROR, FATAL
+console_log_level: INFO
+
+# How many backups should I keep (default: 5, 0 means unlimited)
+keep: 5
+
+include:
+  - "./test"
+
+destination: "./backups"
+
+delete_older_than: 30   # days
+# If true, program will remove backups
+# (from oldest to newest) one by until
+# there's enough space for new backup
+# NOTE: it will stop at last backup
+# to prevent data lost.
+remove_old_backups_for_space: true
