@@ -1,0 +1,9 @@
+# Test folders
+/test/
+/backups/
+
+# Logging folder
+/logs
+
+# Virtual ENV
+/venv
