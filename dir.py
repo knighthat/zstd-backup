@@ -1,5 +1,6 @@
 import os
 from enum import Enum
+from inspect import getsourcefile
 from re import match
 
 import logger
@@ -90,3 +91,7 @@ def abspath(path: str) -> str:
 
 def basename(path: str) -> str:
     return os.path.basename(path)
+
+
+def srcfile() -> str:
+    return os.path.dirname(getsourcefile(lambda: 0))

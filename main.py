@@ -24,7 +24,7 @@ if __name__ == '__main__':
     #
     yamlfile: dict
     try:
-        with open("config.yml", 'r') as file:
+        with open(f'{dir.srcfile()}/config.yml', 'r') as file:
             yamlfile = yaml.safe_load(file)
     except Exception as e:
         logger.fatal("Couldn't load config.yml!")

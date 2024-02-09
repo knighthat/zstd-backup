@@ -18,7 +18,7 @@ class Backup:
 
     def _set_destination(self, path: str) -> None:
         if not path:
-            path = f'{os.curdir}/backups/'
+            path = os.path.join(dir.srcfile(), 'backups')
             logger.warn(f'Empty or null destination! Using {path}')
 
         self.destination = dir.prep(path)
