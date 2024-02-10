@@ -18,18 +18,18 @@ consoleHandler.setLevel(logging.INFO)
 
 def set_console_log_level(level: str) -> None:
     lvl: int
-    match level.lower():
-        case "debug":
-            lvl = logging.DEBUG
-        case "warn":
-            lvl = logging.WARN
-        case "error":
-            lvl = logging.ERROR
-        case "fatal":
-            lvl = logging.FATAL
-        case _:
-            lvl = logging.INFO
 
+    if level.lower() == 'debug':
+        lvl = logging.DEBUG
+    elif level.lower() == 'warn':
+        lvl = logging.WARN
+    elif level.lower() == 'error':
+        lvl = logging.ERROR
+    elif level.lower() == 'fatal':
+        lvl = logging.FATAL
+    else:
+        lvl = logging.INFO
+        
     consoleHandler.setLevel(lvl)
 
 

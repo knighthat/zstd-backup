@@ -41,11 +41,9 @@ def file_exist(path: str) -> ReturnCode:
 def prep(path: str) -> str:
     path = abspath(path)
     logger.debug(f'Backup will be saved to: {path}')
-    match folder_exist(path):
-        case ReturnCode.EXIST:
-            pass
-        case _:
-            os.makedirs(path)
+
+    if folder_exist(path) != ReturnCode.EXIST:
+        os.makedirs(path)
 
     return path
 
