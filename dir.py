@@ -2,6 +2,7 @@ import os
 from enum import Enum
 from inspect import getsourcefile
 from re import match
+from shutil import rmtree
 
 import logger
 
@@ -72,8 +73,14 @@ def get_free_space(of: str) -> int:
 
 
 def delete(path: str) -> None:
-    os.remove(path)
-    logger.info(f'Deleted {path}!')
+    if os.path.isdir(path):
+        rmtree(path)
+        logger.info(f'Deleted directory:  {path}')
+    elif os.path.isfile(path):
+        os.remove(path)
+        logger.info(f'Deleted file: {path}')
+    else:
+        logger.info(f'Failed to delete {path}: Unknown type!')
 
 
 def abspath(path: str) -> str:
