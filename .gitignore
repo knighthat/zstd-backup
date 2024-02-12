@@ -1,6 +1,7 @@
 # Test folders
 /test/
 /backups/
+/unittest/logs
 
 # Logging folder
 /logs
