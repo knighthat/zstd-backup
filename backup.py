@@ -50,15 +50,25 @@ class Backup:
 
     def __len__(self) -> int:
 
+        def _size(abspath: str, total: int) -> None:
+            try:
+                total += os.path.getsize(abspath)
+            except Exception as e:
+                logger.fatal(f'Error while calculating size of {abspath}')
+                logger.exception(e)
+
+        def _dir_size(abspath: str, total: int) -> None:
+            for root, dirs, names in os.walk(abspath):
+                for name in names:
+                    filepath = os.path.join(root, name)
+                    _size(filepath, total)
+                    
         size: int = 0
         for file in self.children:
             if os.path.isfile(file):
-                size += os.path.getsize(file)
+                _size(file, size)
             elif os.path.isdir(file):
-                for root, dirs, names in os.walk(file):
-                    for filename in names:
-                        path = os.path.join(root, filename)
-                        size += os.path.getsize(path)
+                _dir_size(file, size)
 
         return size
 
