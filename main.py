@@ -37,30 +37,39 @@ if __name__ == '__main__':
     #
     #   Step 2: Create a backup profile
     #
-    backup: Backup = Backup(yamlfile['include'], yamlfile['destination'], yamlfile['keep'])
-    logger.info(f'Keep: {backup.keep} backup(s)')
-    logger.info(f'Backup: {backup.children}')
-    logger.info(f'Destination: {backup.destination}')
+    try:
+        backup: Backup = Backup(yamlfile['include'], yamlfile['destination'], yamlfile['keep'])
+        logger.info(f'Keep: {backup.keep} backup(s)')
+        logger.info(f'Backup: {backup.children}')
+        logger.info(f'Destination: {backup.destination}')
 
-    # Exit if there's nothing to compress
-    total_size: int = len(backup)
-    logger.info(f'{backup.filename} needs up to {total_size} bytes to store!')
-    if total_size == 0:
-        logger.error(f'There is nothing to backup!')
-        exit(0)
+        # Exit if there's nothing to compress
+        total_size: int = len(backup)
+        logger.info(f'{backup.filename} needs up to {total_size} bytes to store!')
+        if total_size == 0:
+            logger.error(f'There is nothing to backup!')
+            exit(0)
+    except Exception as e:
+        logger.fatal('Error occurs while setting up backup file!')
+        logger.exception(e)
+        exit(3)
 
-    #
-    #   Step 3: Delete expired backups
-    #
-    del_old_backups(dir.scan_4_backup(backup.destination), yamlfile['delete_older_than'])
+    try:
+        #
+        #   Step 3: Delete expired backups
+        #
+        del_old_backups(dir.scan_4_backup(backup.destination), yamlfile['delete_older_than'])
 
-    #
-    #   Step 4: Reduce the amount of backups to number defined in config.yml
-    #
-    if backup.keep > 0:
-        backups: list[str] = dir.scan_4_backup(backup.destination)
-        while len(backups) > backup.keep - 1:
-            backups = delete_oldest(backups)
+        #
+        #   Step 4: Reduce the amount of backups to number defined in config.yml
+        #
+        if backup.keep > 0:
+            backups: list[str] = dir.scan_4_backup(backup.destination)
+            while len(backups) > backup.keep - 1:
+                backups = delete_oldest(backups)
+    except Exception as e:
+        logger.fatal('Failed to make space for new backup!')
+        logger.exception(e)
 
     #
     #   Step 5: Check for empty space
@@ -80,8 +89,15 @@ if __name__ == '__main__':
             logger.error(f'Not enough space, exiting...')
             exit(1)
 
-    logger.info('Backing up. Please wait...')
-    start: float = time.perf_counter()
-    compress(backup)
-    stop: float = time.perf_counter()
-    logger.info(f'Backup finished in {stop - start} seconds')
+    try:
+        #
+        #   Step 6: Compress all files
+        #
+        logger.info('Backing up. Please wait...')
+        start: float = time.perf_counter()
+        compress(backup)
+        stop: float = time.perf_counter()
+        logger.info(f'Backup finished in {stop - start} seconds')
+    except Exception as e:
+        logger.fatal('Error occurs while backing up!')
+        logger.exception(e)
