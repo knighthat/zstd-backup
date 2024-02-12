@@ -85,6 +85,8 @@ def delete(path: str) -> None:
 
 def abspath(path: str) -> str:
     absolute: str = ''
+    if os.path.isabs(path):
+        absolute = path
     if path.startswith('~'):
         logger.debug(f'Convert {path} to {os.path.expanduser(path)}')
         absolute = os.path.expanduser(path)
