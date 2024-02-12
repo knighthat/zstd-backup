@@ -50,27 +50,27 @@ class Backup:
 
     def __len__(self) -> int:
 
-        def _size(abspath: str, total: int) -> None:
+        def _size(abspath: str, total: int) -> int:
             try:
-                total += os.path.getsize(abspath)
+                return total + os.path.getsize(abspath)
             except FileNotFoundError:
                 logger.warn(f'Error while reading {abspath}! Could be broken link (shortcut). Skipping...')
             except Exception as e:
                 logger.warn(f'Error while calculating size of {abspath}')
                 logger.exception(e)
 
-        def _dir_size(abspath: str, total: int) -> None:
+        def _dir_size(abspath: str, total: int) -> int:
             for root, dirs, names in os.walk(abspath):
                 for name in names:
                     filepath = os.path.join(root, name)
-                    _size(filepath, total)
+                    return _size(filepath, total)
 
         size: int = 0
         for file in self.children:
             if os.path.isfile(file):
-                _size(file, size)
+                size += _size(file, size)
             elif os.path.isdir(file):
-                _dir_size(file, size)
+                size += _dir_size(file, size)
 
         return size
 
