@@ -84,16 +84,21 @@ def delete(path: str) -> None:
 
 
 def abspath(path: str) -> str:
+    absolute: str = ''
     if path.startswith('~'):
         logger.debug(f'Convert {path} to {os.path.expanduser(path)}')
-        path = os.path.expanduser(path)
-    elif path.startswith('./'):
-        path = os.path.join(srcfile(), path[2:])
+        absolute = os.path.expanduser(path)
+    elif path.startswith('.'):
+        appd = path[2:] if path[1] == '/' else path
+        absolute = os.path.join(srcfile(), appd)
 
-    abspath: str = os.path.abspath(path)
-    logger.debug(f'Absolute path of {path} is {abspath}')
+    if not absolute:
+        raise ValueError(f'Unknown path: {path}')
 
-    return abspath
+    if path != absolute:
+        logger.debug(f'Absolute path of {path} is {absolute}')
+
+    return absolute
 
 
 def basename(path: str) -> str:
