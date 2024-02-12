@@ -90,16 +90,46 @@ class DirTestCase(unittest.TestCase):
         parent = os.path.abspath(os.pardir)
         filepath = 'path/to/file'
 
-        case1 = f'~/{filepath}'
+        # This scenario will test the conversion of '~' character.
+        # The '~' character must be converted into the value of $HOME
+        # and the result must be an absolute path.
+        case1 = dir.abspath(f'~/{filepath}')
         xpt_case1 = f'{os.path.expanduser("~")}/{filepath}'
-        self.assertEqual(xpt_case1, dir.abspath(case1))
+        self.assertTrue(os.path.isabs(case1), f'{case1} must be an absolute path!')
+        self.assertTrue(os.path.isabs(xpt_case1), f'{xpt_case1} must be an absolute path!')
+        self.assertEqual(xpt_case1, case1)
 
-        case2 = f'./{filepath}'
+        # This scenario tests the conversion of '.' (current directory) character.
+        # The '.' character must the converted into the project's directory (main.py's dir)
+        # and the result must be an absolute path.
+        case2 = dir.abspath(f'./{filepath}')
         xpt_case2 = f'{parent}/{filepath}'
-        self.assertEqual(xpt_case2, dir.abspath(case2))
+        self.assertTrue(os.path.isabs(case2), f'{case2} must be an absolute path!')
+        self.assertTrue(os.path.isabs(xpt_case2), f'{xpt_case2} must be an absolute path!')
+        self.assertEqual(xpt_case2, case2)
 
+        # This scenario will not convert '.' character because it's a file
+        # starts with a dot (signal for hidden file on Linux machine).
+        # This relative path will be appended to the project's directory
+        # (main.py's dir) and the result must be an absolute path
+        case3 = dir.abspath('.file')
         xpt_case3 = f'{parent}/.file'
-        self.assertEqual(xpt_case3, dir.abspath('.file'))
+        self.assertTrue(os.path.isabs(case3), f'{case3} must be an absolute path!')
+        self.assertTrue(os.path.isabs(xpt_case3), f'{xpt_case3} must be an absolute path!')
+        self.assertEqual(xpt_case3, case3)
+
+        # This scenario asserts the path will not be converted if
+        # it's already in absolute form.
+        xpt_case4 = f'{os.path.dirname(os.pardir)}/file'
+        case4 = dir.abspath(xpt_case4)
+        self.assertTrue(os.path.isabs(case4), f'{case4} must be an absolute path!')
+        self.assertTrue(os.path.isabs(xpt_case4), f'{xpt_case4} must be an absolute path!')
+        self.assertEqual(xpt_case3, case3)
+
+        # This scenario confirms ValueError exception will be thrown
+        # if the file contains invalid character in its path
+        with self.assertRaises(ValueError):
+            dir.abspath(f':/null')
 
 
 if __name__ == '__main__':
