@@ -14,3 +14,7 @@ class Arguments:
             self.threads = threads
         else:
             self.threads = 0
+
+        # Set threads to the highest if current number is 0
+        if self.threads == 0:
+            self.threads = cpu_count()
