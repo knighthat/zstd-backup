@@ -59,6 +59,8 @@ class Backup:
                 logger.warn(f'Error while calculating size of {abspath}')
                 logger.exception(e)
 
+            return 0
+
         def _dir_size(abspath: str) -> int:
             total: int = 0
             for root, dirs, names in os.walk(abspath):
