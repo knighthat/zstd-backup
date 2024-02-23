@@ -4,8 +4,9 @@ import yaml
 
 import dir
 import logger
+from arguments import Arguments
 from backup import Backup, del_old_backups, parse_date
-from compress import compress
+from compress import zstd_compress
 
 
 def delete_oldest(backups: list[str]) -> list[str]:
@@ -91,11 +92,25 @@ if __name__ == '__main__':
 
     try:
         #
-        #   Step 6: Compress all files
+        #   Step 6: Load Arguments
         #
-        logger.info('Backing up. Please wait...')
+        level: int = yamlfile['arguments']['level']
+        threads: int = yamlfile['arguments']['threads']
+        arguments: Arguments = Arguments(level, threads)
+
+        logger.info(f'Compressing at level {level} with {threads} threads!')
+
+        #
+        #   Step 7: Start Compression
+        #
+        # Start timer
         start: float = time.perf_counter()
-        compress(backup)
+
+        # Begin compressing
+        logger.info('Backing up. Please wait...')
+        zstd_compress(backup, arguments)
+
+        # Stop timer
         stop: float = time.perf_counter()
         logger.info(f'Backup finished in {stop - start} seconds')
     except Exception as e:
