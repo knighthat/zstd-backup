@@ -16,3 +16,14 @@ delete_older_than: 30   # days
 # NOTE: it will stop at last backup
 # to prevent data lost.
 remove_old_backups_for_space: true
+
+arguments:
+  # Compression level.
+  # Higher values are slower but yield smaller size.
+  # Default level is 3
+  # More at: https://python-zstandard.readthedocs.io/en/latest/compressor.html#zstdcompressor
+  level: 3
+  # How many should the algo use.
+  # More threads equals faster compression time.
+  # 0 will use all threads (also the default)
+  threads: 4
