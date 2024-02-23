@@ -3,8 +3,8 @@ import tarfile
 
 import zstandard as zstd
 
-from arguments import Arguments
 from backup import Backup
+from settings import Arguments
 
 
 def zstd_compress(backup: Backup, settings: Arguments) -> None:
