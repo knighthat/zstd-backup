@@ -10,7 +10,8 @@ time_format = "%Y-%b-%d %H-%M-%f"
 
 class Backup:
 
-    def __init__(self, backup: list[str], destination: str, keep: int) -> None:
+    def __init__(self, backup: list[str], destination: str, keep: int, ignore: list[str] = None) -> None:
+        self.ignore = [] if ignore is None else ignore
         self._set_destination(destination)
         self._set_children(backup)
         self._set_keep(keep)
@@ -26,12 +27,28 @@ class Backup:
     def _set_children(self, paths: list[str]) -> None:
         self.children: list[str] = []
 
+        def _add_file(path: str) -> None:
+            for ign in self.ignore:
+                if path.startswith(ign):
+                    logger.debug(f'Ignore {path}!')
+                else:
+                    self.children.append(path)
+
+        def _add_dir(path: str) -> None:
+            for root, dirs, files in os.walk(path):
+                for name in files:
+                    _add_file(os.path.join(root, name))
+
         for p in paths:
-            path = dir.abspath(p)
-            if not os.path.exists(path):
-                logger.warn(f'{path} does not exist! Skipping...')
-            else:
-                self.children.append(path)
+            abspath = dir.abspath(p)
+            if not os.path.exists(abspath):
+                logger.warn(f'{abspath} does not exist! Skipping...')
+                continue
+
+            if os.path.isdir(abspath):
+                _add_dir(abspath)
+            elif os.path.isfile(abspath):
+                _add_file(abspath)
 
     def _set_keep(self, history: int) -> None:
         result: int = 0

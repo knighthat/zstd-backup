@@ -9,6 +9,11 @@ include:
 
 destination: "./backups"
 
+# Ignore all files that start
+# with 1 of the paths below.
+ignore:
+  - '/mnt/projects/Python/Server Backup/test/5/ignore'
+
 delete_older_than: 30   # days
 # If true, program will remove backups
 # (from oldest to newest) one by until

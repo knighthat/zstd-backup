@@ -39,7 +39,7 @@ if __name__ == '__main__':
     #   Step 2: Create a backup profile
     #
     try:
-        backup: Backup = Backup(yamlfile['include'], yamlfile['destination'], yamlfile['keep'])
+        backup: Backup = Backup(yamlfile['include'], yamlfile['destination'], yamlfile['keep'], yamlfile['ignore'])
         logger.info(f'Keep: {backup.keep} backup(s)')
         logger.info(f'Backup: {backup.children}')
         logger.info(f'Destination: {backup.destination}')
