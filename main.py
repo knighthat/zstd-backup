@@ -41,7 +41,7 @@ if __name__ == '__main__':
     try:
         backup: Backup = Backup(yamlfile['include'], yamlfile['destination'], yamlfile['keep'], yamlfile['ignore'])
         logger.info(f'Keep: {backup.keep} backup(s)')
-        logger.info(f'Backup: {backup.children}')
+        logger.info(f'Backup: {yamlfile["include"]}')
         logger.info(f'Destination: {backup.destination}')
 
         # Exit if there's nothing to compress
