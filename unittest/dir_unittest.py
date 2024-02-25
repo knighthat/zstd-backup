@@ -10,7 +10,7 @@ import dir
 class DirTestCase(unittest.TestCase):
 
     @classmethod
-    def tearDown(self) -> None:
+    def tearDown(cls) -> None:
         """
         Clean up files and folders that were created during tests
         """
