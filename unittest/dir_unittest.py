@@ -120,7 +120,7 @@ class DirTestCase(unittest.TestCase):
 
         # This scenario asserts the path will not be converted if
         # it's already in absolute form.
-        xpt_case4 = f'{os.path.dirname(os.pardir)}/file'
+        xpt_case4 = f'{parent}/file'
         case4 = dir.abspath(xpt_case4)
         self.assertTrue(os.path.isabs(case4), f'{case4} must be an absolute path!')
         self.assertTrue(os.path.isabs(xpt_case4), f'{xpt_case4} must be an absolute path!')
