@@ -4,8 +4,8 @@ import unittest
 from datetime import datetime, timedelta
 from inspect import getsourcefile
 
-import backup
-from dir import scan_4_backup
+from src import backup
+from src.dir import scan_4_backup
 
 
 def curdir() -> str:
