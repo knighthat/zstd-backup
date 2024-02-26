@@ -99,7 +99,7 @@ class DirTestCase(unittest.TestCase):
         self.assertEqual(xpt_case1, case1)
 
         # This scenario tests the conversion of '.' (current directory) character.
-        # The '.' character must the converted into the project's directory (server-backup.py's dir)
+        # The '.' character must the converted into the project's directory (zstd_backup.py's dir)
         # and the result must be an absolute path.
         case2 = dir.abspath(f'./{filepath}')
         xpt_case2 = f'{parent}/{filepath}'
@@ -110,7 +110,7 @@ class DirTestCase(unittest.TestCase):
         # This scenario will not convert '.' character because it's a file
         # starts with a dot (signal for hidden file on Linux machine).
         # This relative path will be appended to the project's directory
-        # (server-backup.py's dir) and the result must be an absolute path
+        # (zstd_backup.py's dir) and the result must be an absolute path
         case3 = dir.abspath('.file')
         xpt_case3 = f'{parent}/.file'
         self.assertTrue(os.path.isabs(case3), f'{case3} must be an absolute path!')
