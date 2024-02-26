@@ -45,7 +45,7 @@ venv/bin/pip install -r requirements.txt
 5. Run program by executing `main.py` script
 
 ```shell
-env/bin/python3 main.py
+venv/bin/python3 main.py
 ```
 
 ## config.yml
