@@ -1,10 +1,6 @@
-from inspect import getsourcefile
-
 from setuptools import setup
 
 from src import __version__, __author__, __url__, __license__
-
-PROJ_HERE = getsourcefile(lambda: 0)
 
 setup(
     name="ZSTD Backup",
