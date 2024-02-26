@@ -1,10 +1,12 @@
 # Test folders
 /test/
 /backups/
-/unittest/logs
 
-# Logging folder
-/logs
+# Logging folders
+*logs/
 
 # Virtual ENV
 /venv
+
+# Pycharm IDE
+.idea
