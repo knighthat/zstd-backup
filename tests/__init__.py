@@ -11,7 +11,7 @@ valid_config: dict = {
         './tests/include/4',
         './tests/include/ignore'
     ],
-    'destination': './backups',
+    'destination': './tests/backups',
     'ignore': './tests/include/ignore',
     'old_backups': {
         'keep': 1,
