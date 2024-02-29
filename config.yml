@@ -1,16 +1,19 @@
 # Available levels: DEBUG, INFO, WARN, ERROR, FATAL
 console_log_level: INFO
 
-# How many backups should I keep (default: 5, 0 means unlimited)
-keep: 5
-
+# All files and folders will be included
+# in the final compressed file.
 include:
   - "./test"
 
+# Where to save this backup.
+# Must be a path (program creates dirs if path not exist)
 destination: "./backups"
 
-# Ignore all files that start
-# with 1 of the paths below.
+# Ignore all files that start with 1 of the paths below.
+# Must be in absolute form.
+# If '/path/to/ignore' is listed, any sub-folders and files
+# within that directory will be ignored.
 ignore:
   - '/path/to/ignore1'
   - '/path/to/ignore2'
