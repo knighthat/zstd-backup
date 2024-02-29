@@ -12,7 +12,9 @@ destination: "./backups"
 # Ignore all files that start
 # with 1 of the paths below.
 ignore:
-  - '/mnt/projects/Python/Server Backup/test/5/ignore'
+  - '/path/to/ignore1'
+  - '/path/to/ignore2'
+  - '/path/to/ignore3'
 
 delete_older_than: 30   # days
 # If true, program will remove backups
