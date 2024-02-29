@@ -3,7 +3,7 @@ from datetime import timedelta
 
 import dir
 import logger
-from src import today, time_format
+from src import today, time_format, PROJECT_DIR
 from src.parser import parse_date
 
 
@@ -18,10 +18,13 @@ class Backup:
 
     def _set_destination(self, path: str) -> None:
         if not path:
-            path = os.path.join(dir.srcfile(), 'backups')
+            path = os.path.join(PROJECT_DIR, 'backups')
             logger.warn(f'Empty or null destination! Using {path}')
 
-        self.destination = dir.prep(path)
+        self.destination = dir.abspath(path)
+        if dir.folder_exist(self.destination) != dir.ReturnCode.EXIST:
+            os.makedirs(self.destination)
+        logger.debug(f'Backup will be saved to: {self.destination}')
 
     def _set_children(self, paths: list[str]) -> None:
         self.children: list[str] = []
