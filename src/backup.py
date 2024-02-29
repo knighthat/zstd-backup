@@ -51,8 +51,9 @@ class BackupProfile:
             for ign in self.ignore:
                 if path.startswith(ign):
                     logger.debug(f'Ignore {path}!')
-                else:
-                    self.children.add(path)
+                    return
+
+            self.children.add(path)
 
         def _add_dir(path: str) -> None:
             """
