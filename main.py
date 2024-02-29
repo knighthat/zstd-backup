@@ -4,9 +4,10 @@ import yaml
 
 import dir
 import logger
-from backup import Backup, del_old_backups, parse_date
+from backup import Backup, del_old_backups
 from compress import zstd_compress
 from settings import Arguments
+from src.parser import parse_date
 
 
 def delete_oldest(backups: list[str]) -> list[str]:

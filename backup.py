@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 import dir
 import logger
+from src.parser import parse_date
 
 today = datetime.today()
 time_format = "%Y-%b-%d %H-%M-%f"
@@ -95,10 +96,6 @@ class Backup:
                 size += _dir_size(file)
 
         return size
-
-
-def parse_date(filename: str) -> datetime:
-    return datetime.strptime(filename.split('.')[0], time_format)
 
 
 def del_old_backups(backups: list[str], days: int) -> None:
