@@ -2,11 +2,10 @@ import time
 
 import yaml
 
-import dir
-import logger
-from backup import Backup, del_old_backups
-from compress import zstd_compress
 from settings import Arguments
+from src import dir, logger, PROJECT_DIR
+from src.backup import Backup, del_old_backups
+from src.compress import zstd_compress
 from src.parser import parse_date
 
 
@@ -26,7 +25,7 @@ if __name__ == '__main__':
     #
     yamlfile: dict
     try:
-        with open(f'{dir.srcfile()}/config.yml', 'r') as file:
+        with open(f'{PROJECT_DIR}/config.yml', 'r') as file:
             yamlfile = yaml.safe_load(file)
     except Exception as e:
         logger.fatal("Couldn't load config.yml!")

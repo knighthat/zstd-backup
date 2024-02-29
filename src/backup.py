@@ -1,9 +1,7 @@
 import os
 from datetime import timedelta
 
-import dir
-import logger
-from src import today, time_format, PROJECT_DIR
+from src import today, time_format, PROJECT_DIR, dir, logger
 from src.parser import parse_date
 
 
