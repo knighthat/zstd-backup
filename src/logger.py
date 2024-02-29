@@ -1,16 +1,17 @@
 import logging
 import os
-from datetime import datetime
 
-from src import __version__, __copyright__
+from src import __version__, __copyright__, PROJECT_DIR, today
 
-workdir = "./logs"
-filename = f'{workdir}/{datetime.today().date()}.log'
 
-os.makedirs('../logs', exist_ok=True)
+# Set log's location and create folder if needed
+workdir: str = os.path.join(PROJECT_DIR, 'logs')
+os.makedirs(workdir, exist_ok=True)
 
 # Log2File Handler
-fileHandler: logging = logging.FileHandler(filename)
+filename: str = f'{today.date()}.log'
+filepath: str = os.path.join(workdir, filename)
+fileHandler: logging = logging.FileHandler(filepath)
 fileHandler.setLevel(logging.DEBUG)
 
 # Log2Console Handler
