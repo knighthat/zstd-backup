@@ -25,17 +25,6 @@ def folder_exist(path: str) -> ReturnCode:
     return result
 
 
-
-def prep(path: str) -> str:
-    if folder_exist(path) != ReturnCode.EXIST:
-        os.makedirs(path)
-
-    path = abspath(path)
-    logger.debug(f'Backup will be saved to: {path}')
-
-    return path
-
-
 def scan_4_backup(destination: str) -> list[str]:
     """
     Scan provided path, parse any file that matches
