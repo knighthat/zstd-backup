@@ -2,6 +2,8 @@ import logging
 import os
 from datetime import datetime
 
+from src import __version__, __copyright__
+
 workdir = "./logs"
 filename = f'{workdir}/{datetime.today().date()}.log'
 
@@ -29,7 +31,7 @@ def set_console_log_level(level: str) -> None:
         lvl = logging.FATAL
     else:
         lvl = logging.INFO
-        
+
     consoleHandler.setLevel(lvl)
 
 
@@ -72,3 +74,8 @@ def exception(e: Exception):
 def eol():
     with open(filename, 'a') as log:
         log.write('/-----------------------/\n')
+
+
+" Print copyright and license notice "
+print(f'ZSTD Backup - {__version__}')
+print(__copyright__, '\n')
