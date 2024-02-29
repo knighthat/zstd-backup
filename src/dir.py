@@ -25,18 +25,6 @@ def folder_exist(path: str) -> ReturnCode:
     return result
 
 
-def file_exist(path: str) -> ReturnCode:
-    result: ReturnCode
-    if not os.path.exists(path):
-        result = ReturnCode.NOT_EXIST
-    elif os.path.isdir(path):
-        result = ReturnCode.WRONG_TYPE
-    else:
-        result = ReturnCode.EXIST
-
-    logger.debug(f'file_exist({path}) returns {str(result)}')
-    return result
-
 
 def prep(path: str) -> str:
     if folder_exist(path) != ReturnCode.EXIST:
@@ -117,7 +105,3 @@ def abspath(path: str) -> str:
 
 def basename(path: str) -> str:
     return os.path.basename(path)
-
-
-def srcfile() -> str:
-    return os.path.dirname(getsourcefile(lambda: 0))
