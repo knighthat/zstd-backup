@@ -6,6 +6,7 @@ from inspect import getsourcefile
 
 import backup
 from dir import scan_4_backup
+from src.parser import parse_date
 
 
 def curdir() -> str:
@@ -42,14 +43,14 @@ class DateParsingTests(unittest.TestCase):
     def test_valid_parse_date(self) -> None:
         for date in self.valid_dates:
             try:
-                backup.parse_date(date)
+                parse_date(date)
             except:
                 self.fail(f'{date} is invalid!')
 
     def test_invalid_parse_date(self) -> None:
         for date in self.invalid_dates:
             try:
-                backup.parse_date(date)
+                parse_date(date)
                 self.fail(f'{date} is valid!')
             except:
                 continue

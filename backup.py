@@ -1,12 +1,10 @@
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import dir
 import logger
+from src import today, time_format
 from src.parser import parse_date
-
-today = datetime.today()
-time_format = "%Y-%b-%d %H-%M-%f"
 
 
 class Backup:

@@ -3,8 +3,8 @@ import shutil
 import unittest
 from datetime import datetime, timedelta
 
-import backup
 import dir
+from src import today, time_format
 
 
 class DirTestCase(unittest.TestCase):
@@ -66,7 +66,7 @@ class DirTestCase(unittest.TestCase):
         # For example, i=2 will result in the
         # date of 2 days before.
         for i in range(45, -1, -1):
-            dates.append(backup.today - timedelta(days=i))
+            dates.append(today - timedelta(days=i))
 
         # A second list that stores dates as string
         # with Zstandard file extension.
@@ -76,7 +76,7 @@ class DirTestCase(unittest.TestCase):
         os.mkdir('dates')
         for date in dates:
             # Convert datetime obj to string follow format defined in 'backup.time_format'
-            filename = f'{date.strftime(backup.time_format)}.zstd'
+            filename = f'{date.strftime(time_format)}.zstd'
             filepath = f'dates/{filename}'
             date_strings.append(filepath)
 
