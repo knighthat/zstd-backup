@@ -1,26 +1,38 @@
 # Available levels: DEBUG, INFO, WARN, ERROR, FATAL
 console_log_level: INFO
 
-# How many backups should I keep (default: 5, 0 means unlimited)
-keep: 5
-
+# All files and folders will be included
+# in the final compressed file.
 include:
   - "./test"
 
+# Where to save this backup.
+# Must be a path (program creates dirs if path not exist)
 destination: "./backups"
 
-# Ignore all files that start
-# with 1 of the paths below.
+# Ignore all files that start with 1 of the paths below.
+# Must be in absolute form.
+# If '/path/to/ignore' is listed, any sub-folders and files
+# within that directory will be ignored.
 ignore:
-  - '/mnt/projects/Python/Server Backup/test/5/ignore'
+  - '/path/to/ignore1'
+  - '/path/to/ignore2'
+  - '/path/to/ignore3'
 
-delete_older_than: 30   # days
-# If true, program will remove backups
-# (from oldest to newest) one by until
-# there's enough space for new backup
-# NOTE: it will stop at last backup
-# to prevent data lost.
-remove_old_backups_for_space: true
+old_backups:
+  # How many backups should I keep (default: 5, 0 means unlimited)
+  keep: 5
+  # If a backup's creation date exceeds this number, it'll be deleted.
+  # Set this to 0 to skip this process
+  retention: 30   # Days
+  # Should this program delete older backups (even if it was
+  # within retention days and total files less than 'keep')
+  # to save space for new backup.
+  # This option always keeps the most recent backup
+  # unless 'aggressive' is set to True.
+  remove_old_backups_for_space: true
+  # If True, delete to the last backup to make some space for new backup
+  aggressive: false
 
 arguments:
   # Compression level.

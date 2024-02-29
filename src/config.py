@@ -2,8 +2,8 @@ from logging import DEBUG, INFO, WARN, ERROR, FATAL
 from multiprocessing import cpu_count as cpus
 from os.path import join
 
-from logger import warn
 from src import PROJECT_DIR
+from src.logger import warn
 
 
 class OldBackupSettings:
