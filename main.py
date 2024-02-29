@@ -1,1 +1,1 @@
-/mnt/projects/Python/Server Backup/zstd_backup.py
+zstd_backup.py
