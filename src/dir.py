@@ -37,6 +37,12 @@ def prep(path: str) -> str:
 
 
 def scan_4_backup(destination: str) -> list[str]:
+    """
+    Scan provided path, parse any file that matches
+    compressed file's format. Add it to a list and return
+    :param destination: directory to scan
+    :return: a list of files matched format
+    """
     results: list[str] = []
     if not folder_exist(destination):
         logger.warn(f'{destination} is not a directory!')
@@ -52,6 +58,12 @@ def scan_4_backup(destination: str) -> list[str]:
 
 
 def get_free_space(of: str) -> int:
+    """
+    Calculate and return the number of bytes
+    can be written to this path.
+    :param of: path to calculate free space
+    :return: available space in bytes
+    """
     fs_stat: os = os.statvfs(of)
     free = fs_stat.f_frsize * fs_stat.f_bavail
 
@@ -60,6 +72,10 @@ def get_free_space(of: str) -> int:
 
 
 def delete(path: str) -> None:
+    """
+    Delete physical file/folder
+    :param path: to delete
+    """
     if os.path.isdir(path):
         rmtree(path)
         logger.info(f'Deleted directory:  {path}')
