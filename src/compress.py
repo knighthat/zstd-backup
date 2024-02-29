@@ -3,13 +3,12 @@ import tarfile
 
 import zstandard as zstd
 
-from settings import Arguments
-from src.backup import Backup
+from backup import BackupProfile
+from config import Configuration
 
 
-def zstd_compress(backup: Backup, settings: Arguments) -> None:
-    with open(os.path.join(backup.destination, backup.filename), 'wb') as ofh:
-
+def zstd_compress(profile: BackupProfile, config: Configuration) -> None:
+    with open(os.path.join(profile.destination, profile.filename), 'wb') as zfile:
         # Add file to TAR while compressing it
         def _compress(file: str) -> None:
             tar.add(file)
@@ -22,14 +21,14 @@ def zstd_compress(backup: Backup, settings: Arguments) -> None:
                     _compress(os.path.join(root, name))
 
         # Create zstd file and its stream to write data
-        cctx = zstd.ZstdCompressor(level=settings.level, threads=settings.threads)
-        cstream = cctx.stream_writer(ofh)
+        cctx = zstd.ZstdCompressor(level=config.zstd_arguments.level, threads=config.zstd_arguments.threads)
+        cstream = cctx.stream_writer(zfile)
 
         # Use TAR to store multiple files while
         # keeping their absolute paths
         with tarfile.open(fileobj=cstream, mode='w|', format=tarfile.PAX_FORMAT) as tar:
 
-            for child in backup.children:
+            for child in profile.children:
                 if os.path.isfile(child):
                     _compress(child)
 
