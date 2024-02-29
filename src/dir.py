@@ -1,10 +1,9 @@
 import os
 from enum import Enum
-from inspect import getsourcefile
 from re import match
 from shutil import rmtree
 
-import logger
+from src import PROJECT_DIR, logger
 
 
 class ReturnCode(Enum):
@@ -84,23 +83,36 @@ def delete(path: str) -> None:
 
 
 def abspath(path: str) -> str:
-    absolute: str = ''
+    """
+    Convert relative path to absolute path
+    :param path: relative path to convert
+    :return: same path but in absolute form
+    """
+
     if os.path.isabs(path):
-        absolute = path
-    if path.startswith('~'):
-        logger.debug(f'Convert {path} to {os.path.expanduser(path)}')
-        absolute = os.path.expanduser(path)
-    elif path.startswith('.'):
-        appd = path[2:] if path[1] == '/' else path
-        absolute = os.path.join(srcfile(), appd)
+        """
+        No further step needed if 'path'
+        is already in absolute form.
+        """
+        return path
 
-    if not absolute:
-        raise ValueError(f'Unknown path: {path}')
+    if path.startswith('~/'):
+        """
+        Convert '~' into user's home directory
+        """
+        return os.path.expanduser(path)
 
-    if path != absolute:
-        logger.debug(f'Absolute path of {path} is {absolute}')
+    if path.startswith('./'):
+        """
+        os.path.abspath() replaces '.' with user's current directory.
+        For example, './rel/path/file1' will be replaced by '$PWD/path/file1'
+        """
+        return path.replace('./', f'{PROJECT_DIR}/')
 
-    return absolute
+    """
+    If no match found, append project's directory in front of it
+    """
+    return os.path.join(PROJECT_DIR, path)
 
 
 def basename(path: str) -> str:
