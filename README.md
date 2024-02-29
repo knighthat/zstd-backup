@@ -13,13 +13,16 @@ For more details, visit [facebook/zstd](https://github.com/facebook/zstd)
 
 ## Requirements
 
-1. Linux machine
-2. Tar package (most linux distros come with this)
-3. Python 3.11 (also included in most modern distros)
-4. Git
+1. Python 3.11
+   - Linux: Included in most modern distros
+   - [Windows](https://www.python.org/downloads/windows/)
+   - [MacOS](https://www.python.org/downloads/macos/)
+2. Git
     * Debian-based distros (Debian, Ubuntu, Mint, etc.): `apt install git`
     * RedHat-based distros (Red Hat, Fedora, CentOS, etc.): `dnf install git`
     * Arch-based distros (Arch Linux, Manjaro): `pacman -S git`
+    * [Git for Windows](https://git-scm.com/download/win)
+    * [Git for macOS](https://git-scm.com/download/mac)
 
 ## Setup
 
@@ -31,8 +34,18 @@ git clone --depth 1 https://github.com/knighthat/zstd-backup && cd zstd-backup
 
 2. Create virtual environment (recommended, or use global python)
 
+### Windows
+> Run this in your command prompt or powershell
+```shell
+python -m venv venv
+```
+### Linux
 ```shell
 /usr/share/python3 -m venv venv
+```
+### MacOS
+```shell
+python -m venv venv
 ```
 
 3. Install required packages
@@ -41,7 +54,7 @@ git clone --depth 1 https://github.com/knighthat/zstd-backup && cd zstd-backup
 venv/bin/pip install -r requirements.txt
 ```
 
-4. Edit configuration `config.yml`
+4. Edit configuration [config.yml](#configyml)
 5. Run program by executing `main.py` script
 
 ```shell
