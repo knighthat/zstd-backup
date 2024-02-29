@@ -19,23 +19,6 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setLevel(logging.INFO)
 
 
-def set_console_log_level(level: str) -> None:
-    lvl: int
-
-    if level.lower() == 'debug':
-        lvl = logging.DEBUG
-    elif level.lower() == 'warn':
-        lvl = logging.WARN
-    elif level.lower() == 'error':
-        lvl = logging.ERROR
-    elif level.lower() == 'fatal':
-        lvl = logging.FATAL
-    else:
-        lvl = logging.INFO
-
-    consoleHandler.setLevel(lvl)
-
-
 logging.basicConfig(
     format='[%(asctime)s / %(levelname)-8.8s] -> %(message)s',
     datefmt='%H:%M:%S',
