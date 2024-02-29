@@ -1,11 +1,12 @@
-import time
+from os.path import join
+from time import sleep, perf_counter
 
 import yaml
 
-from settings import Arguments
 from src import dir, logger, PROJECT_DIR
-from src.backup import Backup, del_old_backups
+from src.backup import BackupProfile, del_old_backups
 from src.compress import zstd_compress
+from src.config import Configuration, verify
 from src.parser import parse_date
 
 
@@ -20,54 +21,73 @@ def delete_oldest(backups: list[str]) -> list[str]:
 
 
 if __name__ == '__main__':
+
     #
-    #   Step 1: Load configuration
+    #   Step 1: Load Configuration
     #
-    yamlfile: dict
+    configuration: Configuration
     try:
-        with open(f'{PROJECT_DIR}/config.yml', 'r') as file:
-            yamlfile = yaml.safe_load(file)
+        with open(join(PROJECT_DIR, 'config.yml'), 'r') as file:
+            configuration = Configuration(yaml.safe_load(file))
+
+        # Load log level from config.yml
+        logger.consoleHandler.setLevel(configuration.log_level)
+
+        if verify(configuration):
+            logger.debug('Verification complete!')
+
+        logger.debug(str(configuration))
     except Exception as e:
         logger.fatal("Couldn't load config.yml!")
         logger.exception(e)
         exit(1)
 
-    # Set console log level according to configuration
-    logger.set_console_log_level(yamlfile['console_log_level'])
-
     #
     #   Step 2: Create a backup profile
     #
+    profile: BackupProfile
     try:
-        backup: Backup = Backup(yamlfile['include'], yamlfile['destination'], yamlfile['keep'], yamlfile['ignore'])
-        logger.info(f'Keep: {backup.keep} backup(s)')
-        logger.info(f'Backup: {yamlfile["include"]}')
-        logger.info(f'Destination: {backup.destination}')
+        profile = BackupProfile(configuration)
 
         # Exit if there's nothing to compress
-        total_size: int = len(backup)
-        logger.info(f'{backup.filename} needs up to {total_size} bytes to store!')
+        total_size: int = len(profile)
         if total_size == 0:
-            logger.error(f'There is nothing to backup!')
+            logger.error('There is nothing to backup!')
             exit(0)
+        else:
+            logger.info(f'{profile.filename} needs up to {total_size} bytes to store!')
+
+        logger.debug(str(profile))
     except Exception as e:
         logger.fatal('Error occurs while setting up backup file!')
         logger.exception(e)
         exit(3)
 
+    old_backups: list[str] = dir.scan_4_backup(profile.destination)
+
     try:
         #
         #   Step 3: Delete expired backups
         #
-        del_old_backups(dir.scan_4_backup(backup.destination), yamlfile['delete_older_than'])
+        if configuration.old_backup_settings.retention > 0:
+
+            del_old_backups(old_backups, configuration.old_backup_settings.retention)
+            old_backups = dir.scan_4_backup(profile.destination)
+
+        else:
+            logger.info('Retention is set to 0 > Overdue backups will not be deleted!')
 
         #
         #   Step 4: Reduce the amount of backups to number defined in config.yml
         #
-        if backup.keep > 0:
-            backups: list[str] = dir.scan_4_backup(backup.destination)
-            while len(backups) > backup.keep - 1:
-                backups = delete_oldest(backups)
+        if configuration.old_backup_settings.keep > 0:
+
+            while len(old_backups) > configuration.old_backup_settings.keep - 1:
+                old_backups = delete_oldest(old_backups)
+
+        else:
+            logger.info('Keep is set to 0 > Keep all old backups!')
+
     except Exception as e:
         logger.fatal('Failed to make space for new backup!')
         logger.exception(e)
@@ -75,43 +95,53 @@ if __name__ == '__main__':
     #
     #   Step 5: Check for empty space
     #
-    if total_size > dir.get_free_space(backup.destination):
-        if yamlfile['remove_old_backups_for_space']:
-            logger.error(f'Not enough space, deleting old backups in 5 seconds... [Ctrl + C] to cancel!')
-            time.sleep(5)
+    if total_size > dir.get_free_space(profile.destination):
+        if configuration.old_backup_settings.del_old_4_space:
+            """
+            If 'old_backups.remove_old_backups_for_space' is set to "true".
+            Program will attempt to remove older backups in order to make
+            space for new compressed file.
+            """
 
-            while total_size > dir.get_free_space(backup.destination) and len(backups) > 1:
-                backups = delete_oldest(backups)
+            # Warn user about space inefficient, and give them 5 seconds to cancel the task
+            logger.error('Not enough space, deleting old backups in 5 seconds... [Ctrl + C] to cancel!')
+            sleep(5)
 
-            if total_size > dir.get_free_space(backup.destination):
-                logger.fatal(f'Failed to free up some space, exiting...')
-                exit(2)
-        else:
-            logger.error(f'Not enough space, exiting...')
-            exit(1)
+            while total_size > dir.get_free_space(profile.destination):
+                if len(old_backups) == 0:
+                    break
+
+                if len(old_backups) > 1 and not configuration.old_backup_settings.aggressive:
+                    """
+                    Break while-loop if 'old_backups.aggressive' is set to "false"
+                    and only 1 backup left. Otherwise, delete to the last one.
+                    """
+                    break
+
+                old_backups = delete_oldest(old_backups)
+
+        if total_size > dir.get_free_space(profile.destination):
+            """
+            If space is insufficient after old backups deletion
+            or when old backup removal is not allowed, throw error
+            then exit with code 2.
+            """
+            logger.fatal('Failed to free up some space, exiting...')
+            exit(2)
 
     try:
         #
-        #   Step 6: Load Arguments
-        #
-        level: int = yamlfile['arguments']['level']
-        threads: int = yamlfile['arguments']['threads']
-        arguments: Arguments = Arguments(level, threads)
-
-        logger.info(f'Compressing at level {level} with {threads} threads!')
-
-        #
-        #   Step 7: Start Compression
+        #   Step 6: Start Compression
         #
         # Start timer
-        start: float = time.perf_counter()
+        start: float = perf_counter()
 
         # Begin compressing
         logger.info('Backing up. Please wait...')
-        zstd_compress(backup, arguments)
+        zstd_compress(profile, configuration)
 
         # Stop timer
-        stop: float = time.perf_counter()
+        stop: float = perf_counter()
         logger.info(f'Backup finished in {stop - start} seconds')
     except Exception as e:
         logger.fatal('Error occurs while backing up!')
