@@ -7,7 +7,7 @@ from src import __version__, __copyright__
 workdir = "./logs"
 filename = f'{workdir}/{datetime.today().date()}.log'
 
-os.makedirs('./logs', exist_ok=True)
+os.makedirs('../logs', exist_ok=True)
 
 # Log2File Handler
 fileHandler: logging = logging.FileHandler(filename)
