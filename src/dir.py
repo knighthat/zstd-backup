@@ -1,7 +1,9 @@
+import ctypes
 import os
 from enum import Enum
 from re import match
 from shutil import rmtree
+from platform import system
 
 from src import PROJECT_DIR, logger
 
@@ -53,11 +55,23 @@ def get_free_space(of: str) -> int:
     :param of: path to calculate free space
     :return: available space in bytes
     """
-    fs_stat: os = os.statvfs(of)
-    free = fs_stat.f_frsize * fs_stat.f_bavail
+    result: int
 
-    logger.debug(f'{free} bytes can be written into {of}')
-    return free
+    if system() == 'Windows':
+        free_bytes = ctypes.c_ulonglong(0)
+        ctypes.windll.kernel32.GetDiskFreeSpaceExW(
+            ctypes.c_wchar_p(of),
+            None,
+            None,
+            ctypes.pointer(free_bytes)
+        )
+        result = free_bytes.value
+    else:
+        fs_stat: os = os.statvfs(of)
+        result = fs_stat.f_frsize * fs_stat.f_bavail
+
+    logger.debug(f'{result} bytes can be written into {of}')
+    return result
 
 
 def delete(path: str) -> None:
