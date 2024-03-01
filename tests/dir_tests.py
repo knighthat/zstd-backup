@@ -1,6 +1,7 @@
 import os
 import unittest
 from datetime import datetime, timedelta
+from pathlib import Path
 from shutil import rmtree
 
 from src import PROJECT_DIR, time_format, today
@@ -65,8 +66,9 @@ class AbsPathTest(unittest.TestCase):
         This scenario asserts the path will not be
         converted because it's already in absolute form.
         """
-        result: str = abspath('/path/to/file')
-        self.assertEqual(result, '/path/to/file')
+        path: str = Path('/path/to/file').__str__()
+        result: str = abspath(path)
+        self.assertEqual(path, result)
         self.assertTrue(os.path.isabs(result))
 
     def test_dot_relative_path(self):
@@ -75,8 +77,9 @@ class AbsPathTest(unittest.TestCase):
         The '.' character must the converted into the project's directory
         (main.py's dir) and the result must be an absolute path.
         """
-        result: str = abspath('./rel/path')
-        self.assertEqual(result, f'{PROJECT_DIR}/rel/path')
+        expected: str = Path(f'{PROJECT_DIR}/rel/path').__str__()
+        result: str = abspath(Path('./rel/path').__str__())
+        self.assertEqual(expected, result)
         self.assertTrue(os.path.isabs(result))
 
     def test_dot_file_path(self):
@@ -86,8 +89,9 @@ class AbsPathTest(unittest.TestCase):
         This relative path will be appended to the project's directory
         (main.py's dir) and the result must be an absolute path
         """
+        expected: str = Path(f'{PROJECT_DIR}/.dotfile').__str__()
         result: str = abspath('.dotfile')
-        self.assertEqual(result, f'{PROJECT_DIR}/.dotfile')
+        self.assertEqual(expected, result)
         self.assertTrue(os.path.isabs(result))
 
     def test_user_home_path(self):
@@ -96,8 +100,9 @@ class AbsPathTest(unittest.TestCase):
         The '~' character must be converted into the value of $HOME
         and the result must be an absolute path.
         """
-        result: str = abspath('~/directory')
-        self.assertEqual(result, f'{os.path.expanduser("~")}/directory')
+        expected: str = Path(f'{os.path.expanduser("~")}/directory').__str__()
+        result: str = abspath(Path('~/directory').__str__())
+        self.assertEqual(result, expected)
         self.assertTrue(os.path.isabs(result))
 
     def test_other_cases(self):
@@ -105,8 +110,9 @@ class AbsPathTest(unittest.TestCase):
         This scenario will append project's dir (main.py's dir)
         to the beginning of the path to make it absolute.
         """
+        expected: str = Path(f'{PROJECT_DIR}/;/rel/path').__str__()
         result: str = abspath(';/rel/path')
-        self.assertEqual(result, f'{PROJECT_DIR}/;/rel/path')
+        self.assertEqual(result, expected)
         self.assertTrue(os.path.isabs(result))
 
 
