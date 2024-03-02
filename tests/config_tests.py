@@ -1,8 +1,9 @@
 import unittest
 from logging import DEBUG
+from platform import system
 
 from src.config import OldBackupSettings, ZstdArguments, Configuration
-from tests import TEST_DIR, valid_config
+from tests import valid_config
 
 
 class OldBackupSettingsTest(unittest.TestCase):
@@ -74,7 +75,6 @@ class ZstdArgumentsTest(unittest.TestCase):
 
 
 class ConfigurationTest(unittest.TestCase):
-    incl_dir: str = f'{TEST_DIR}/include'
     config: Configuration
 
     @classmethod
@@ -89,20 +89,37 @@ class ConfigurationTest(unittest.TestCase):
         This test confirms all paths should be present
         """
         for subdir in ['1', '2', '3', '4']:
-            filepath: str = f'./tests/include/{subdir}'
+            filepath: str
+            if system() == 'Windows':
+                filepath = f'.\\tests\\include\\{subdir}'
+            else:
+                filepath = f'./tests/include/{subdir}'
+
             self.assertIn(filepath, self.config.include)
 
     def test_destination(self):
         """
         This test performs check whether destination is imported correctly
         """
-        self.assertEqual('./tests/backups', self.config.destination)
+        expected: str
+        if system() == 'Windows':
+            expected = '.\\tests\\backups'
+        else:
+            expected = './tests/backups'
+
+        self.assertEqual(expected, self.config.destination)
 
     def test_ignore_paths(self):
         """
         This test asserts ignore path is correctly imported
         """
-        self.assertIn('./tests/include/ignore', self.config.ignore_paths)
+        expected: str
+        if system() == 'Windows':
+            expected = '.\\tests\\include\\ignore'
+        else:
+            expected = './tests/include/ignore'
+
+        self.assertIn(expected, self.config.ignore_paths)
 
     def test_old_backup_settings(self):
         """
@@ -152,11 +169,13 @@ class ConfigurationTest(unittest.TestCase):
         'include' accepts string as valid value.
         This test asserts no TypeError raises during this process
         """
+        value: str = '\\include\\this\\path' if system() == 'Windows' else '/include/this/path'
+
         valid_include = valid_config.copy()
-        valid_include['include'] = '/include/this/path'
+        valid_include['include'] = value
         try:
             configuration: Configuration = Configuration(valid_include)
-            self.assertIn('/include/this/path', configuration.include)
+            self.assertIn(value, configuration.include)
         except TypeError:
             self.fail('"include" string was not parsed properly!')
 
@@ -165,11 +184,13 @@ class ConfigurationTest(unittest.TestCase):
         'ignore' accepts string as valid value.
         This test asserts no TypeError raises during this process
         """
+        value: str = '\\ignore\\this\\path' if system() == 'Windows' else '/ignore/this/path'
+
         valid_ignore = valid_config.copy()
-        valid_ignore['ignore'] = '/ignore/this/path'
+        valid_ignore['ignore'] = value
         try:
             configuration: Configuration = Configuration(valid_ignore)
-            self.assertIn('/ignore/this/path', configuration.ignore_paths)
+            self.assertIn(value, configuration.ignore_paths)
         except TypeError:
             self.fail('"ignore" string was not parsed properly!')
 

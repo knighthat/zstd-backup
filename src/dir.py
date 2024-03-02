@@ -1,9 +1,10 @@
 import ctypes
 import os
 from enum import Enum
+from pathlib import Path
+from platform import system
 from re import match
 from shutil import rmtree
-from platform import system
 
 from src import PROJECT_DIR, logger
 
@@ -92,34 +93,33 @@ def delete(path: str) -> None:
 def abspath(path: str) -> str:
     """
     Convert relative path to absolute path
+    This function uses pathlib.Path to convert
+    to system's path before returning.
     :param path: relative path to convert
     :return: same path but in absolute form
     """
+    result: str
 
     if os.path.isabs(path):
         """
         No further step needed if 'path'
         is already in absolute form.
         """
-        return path
-
-    if path.startswith('~/'):
-        """
-        Convert '~' into user's home directory
-        """
-        return os.path.expanduser(path)
-
-    if path.startswith('./'):
+        result = path
+    elif path.startswith('~/'):
+        " Convert '~' into user's home directory "
+        result = os.path.expanduser(path)
+    elif path.startswith('./'):
         """
         os.path.abspath() replaces '.' with user's current directory.
         For example, './rel/path/file1' will be replaced by '$PWD/path/file1'
         """
-        return path.replace('./', f'{PROJECT_DIR}/')
+        result = path.replace('./', f'{PROJECT_DIR}/')
+    else:
+        " If no match found, append project's directory in front of it "
+        result = os.path.join(PROJECT_DIR, path)
 
-    """
-    If no match found, append project's directory in front of it
-    """
-    return os.path.join(PROJECT_DIR, path)
+    return Path(result).__str__()
 
 
 def basename(path: str) -> str:

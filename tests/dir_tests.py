@@ -66,9 +66,9 @@ class AbsPathTest(unittest.TestCase):
         This scenario asserts the path will not be
         converted because it's already in absolute form.
         """
-        path: str = Path('/path/to/file').__str__()
-        result: str = abspath(path)
-        self.assertEqual(path, result)
+        expected: str = Path('/path/to/file').__str__()
+        result: str = abspath('/path/to/file')
+        self.assertEqual(expected, result)
         self.assertTrue(os.path.isabs(result))
 
     def test_dot_relative_path(self):
@@ -78,7 +78,7 @@ class AbsPathTest(unittest.TestCase):
         (main.py's dir) and the result must be an absolute path.
         """
         expected: str = Path(f'{PROJECT_DIR}/rel/path').__str__()
-        result: str = abspath(Path('./rel/path').__str__())
+        result: str = abspath('./rel/path')
         self.assertEqual(expected, result)
         self.assertTrue(os.path.isabs(result))
 
@@ -101,8 +101,8 @@ class AbsPathTest(unittest.TestCase):
         and the result must be an absolute path.
         """
         expected: str = Path(f'{os.path.expanduser("~")}/directory').__str__()
-        result: str = abspath(Path('~/directory').__str__())
-        self.assertEqual(result, expected)
+        result: str = abspath('~/directory')
+        self.assertEqual(expected, result)
         self.assertTrue(os.path.isabs(result))
 
     def test_other_cases(self):
@@ -112,7 +112,7 @@ class AbsPathTest(unittest.TestCase):
         """
         expected: str = Path(f'{PROJECT_DIR}/;/rel/path').__str__()
         result: str = abspath(';/rel/path')
-        self.assertEqual(result, expected)
+        self.assertEqual(expected, result)
         self.assertTrue(os.path.isabs(result))
 
 
