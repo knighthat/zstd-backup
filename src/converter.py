@@ -50,6 +50,9 @@ def time_converter(seconds: float) -> str:
     :param seconds: time to convert
     :return: hours, minutes, and seconds if any has value greater than 0
     """
+    if round(seconds) == 0:
+        return '0 second'
+
     hour, second = divmod(round(seconds), 3600)
     " Define time units "
     units: dict[str, int] = {
