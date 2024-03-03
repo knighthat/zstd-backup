@@ -4,9 +4,11 @@ on:
       - dev
     paths-ignore:
       - README.md
+      - LICENSE.md
   pull_request:
     paths-ignore:
       - README.md
+      - LICENSE.md
   workflow_dispatch:
 
 jobs:
