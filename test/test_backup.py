@@ -6,7 +6,7 @@ from re import match
 
 from src import backup, config, time_format
 from src.dir import scan_4_backup
-from tests import valid_config, TEST_DIR
+from test import valid_config, TEST_DIR
 
 
 class BackupProfileTest(unittest.TestCase):
@@ -15,7 +15,7 @@ class BackupProfileTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # Make 'include' folder in tests, skip if exists
+        # Make 'include' folder in test, skip if exists
         os.makedirs(cls.incl_dir, exist_ok=True)
 
         " Create 5 sub-folders "
@@ -24,7 +24,7 @@ class BackupProfileTest(unittest.TestCase):
 
             " Each folder contains 5 text files "
             for name in range(5):
-                # /path/to/project/tests/include/ignore/1.txt
+                # /path/to/project/test/include/ignore/1.txt
                 filepath: str = f'{TEST_DIR}/include/{subdir}/{name}.txt'
 
                 " Each text file has about 5KiB of null data "
@@ -133,7 +133,7 @@ class DeleteOlBackupTests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """
-        Remove 'tests/backups' folder
+        Remove 'test/backups' folder
         """
         shutil.rmtree(cls.path)
 
