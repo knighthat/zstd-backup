@@ -44,8 +44,10 @@ python -m venv venv
 
 ### Linux
 
+> Some distros require you to install `venv` module before executing this command
+
 ```shell
-/usr/share/python3 -m venv venv
+/usr/bin/python3 -m venv venv
 ```
 
 ### MacOS

@@ -28,14 +28,14 @@ def folder_exist(path: str) -> ReturnCode:
     return result
 
 
-def scan_4_backup(destination: str) -> list[str]:
+def scan_4_backup(destination: str) -> list:
     """
     Scan provided path, parse any file that matches
     compressed file's format. Add it to a list and return
     :param destination: directory to scan
     :return: a list of files matched format
     """
-    results: list[str] = []
+    results = []
     if not folder_exist(destination):
         logger.warn(f'{destination} is not a directory!')
         return results

@@ -3,7 +3,7 @@ from logging import DEBUG
 from platform import system
 
 from src.config import OldBackupSettings, ZstdArguments, Configuration
-from tests import valid_config
+from test import valid_config
 
 
 class OldBackupSettingsTest(unittest.TestCase):
@@ -28,7 +28,7 @@ class OldBackupSettingsTest(unittest.TestCase):
 
     def test_valid_values(self):
         """
-        This function tests whether new values are applied
+        This function test whether new values are applied
         if correct values are provided as the parameters.
         """
         values: dict = {
@@ -62,7 +62,7 @@ class ZstdArgumentsTest(unittest.TestCase):
 
     def test_valid_values(self):
         """
-        This function tests whether new values are applied
+        This function test whether new values are applied
         if correct values are provided as the parameters.
         """
         values: dict = {
@@ -91,9 +91,9 @@ class ConfigurationTest(unittest.TestCase):
         for subdir in ['1', '2', '3', '4']:
             filepath: str
             if system() == 'Windows':
-                filepath = f'.\\tests\\include\\{subdir}'
+                filepath = f'.\\test\\include\\{subdir}'
             else:
-                filepath = f'./tests/include/{subdir}'
+                filepath = f'./test/include/{subdir}'
 
             self.assertIn(filepath, self.config.include)
 
@@ -103,9 +103,9 @@ class ConfigurationTest(unittest.TestCase):
         """
         expected: str
         if system() == 'Windows':
-            expected = '.\\tests\\backups'
+            expected = '.\\test\\backups'
         else:
-            expected = './tests/backups'
+            expected = './test/backups'
 
         self.assertEqual(expected, self.config.destination)
 
@@ -115,9 +115,9 @@ class ConfigurationTest(unittest.TestCase):
         """
         expected: str
         if system() == 'Windows':
-            expected = '.\\tests\\include\\ignore'
+            expected = '.\\test\\include\\ignore'
         else:
-            expected = './tests/include/ignore'
+            expected = './test/include/ignore'
 
         self.assertIn(expected, self.config.ignore_paths)
 

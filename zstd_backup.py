@@ -7,10 +7,11 @@ from src import dir, logger, PROJECT_DIR
 from src.backup import BackupProfile, del_old_backups
 from src.compress import zstd_compress
 from src.config import Configuration, verify
+from src.converter import size_converter, time_converter
 from src.parser import parse_date
 
 
-def delete_oldest(backups: list[str]) -> list[str]:
+def delete_oldest(backups: list) -> list:
     backups.sort(key=lambda x: parse_date(dir.basename(x)))
 
     if len(backups) > 1:
@@ -55,7 +56,8 @@ if __name__ == '__main__':
             logger.error('There is nothing to backup!')
             exit(0)
         else:
-            logger.info(f'{profile.filename} needs up to {total_size} bytes to store!')
+            comp_size: str = size_converter(total_size)
+            logger.info(f'{profile.filename} needs up to {comp_size} bytes to store!')
 
         logger.debug(str(profile))
     except Exception as e:
@@ -63,7 +65,7 @@ if __name__ == '__main__':
         logger.exception(e)
         exit(3)
 
-    old_backups: list[str] = dir.scan_4_backup(profile.destination)
+    old_backups: list = dir.scan_4_backup(profile.destination)
 
     try:
         #
@@ -142,7 +144,7 @@ if __name__ == '__main__':
 
         # Stop timer
         stop: float = perf_counter()
-        logger.info(f'Backup finished in {stop - start} seconds')
+        logger.info(f'Backup finished in {time_converter(stop - start)}')
     except Exception as e:
         logger.fatal('Error occurs while backing up!')
         logger.exception(e)

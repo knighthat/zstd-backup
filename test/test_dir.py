@@ -6,7 +6,7 @@ from shutil import rmtree
 
 from src import PROJECT_DIR, time_format, today
 from src.dir import abspath, ReturnCode, folder_exist, scan_4_backup
-from tests import TEST_DIR
+from test import TEST_DIR
 
 
 class FileAndFolderTest(unittest.TestCase):
@@ -30,7 +30,7 @@ class FileAndFolderTest(unittest.TestCase):
 
 class BackupScannerTest(unittest.TestCase):
     path: str = os.path.join(TEST_DIR, 'dates')
-    dates: set[str] = set()
+    dates = set()
 
     @classmethod
     def setUp(cls):
@@ -55,7 +55,7 @@ class BackupScannerTest(unittest.TestCase):
         rmtree(cls.path)
 
     def test_scan_4_backup(self):
-        scanned: list[str] = scan_4_backup(self.path)
+        scanned: list = scan_4_backup(self.path)
         self.assertCountEqual(self.dates, scanned)
 
 
@@ -73,7 +73,7 @@ class AbsPathTest(unittest.TestCase):
 
     def test_dot_relative_path(self):
         """
-        This scenario tests the conversion of '.' (current directory) character.
+        This scenario test the conversion of '.' (current directory) character.
         The '.' character must the converted into the project's directory
         (main.py's dir) and the result must be an absolute path.
         """
