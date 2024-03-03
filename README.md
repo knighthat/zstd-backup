@@ -45,7 +45,7 @@ python -m venv venv
 ### Linux
 
 ```shell
-/usr/share/python3 -m venv venv
+/usr/bin/python3 -m venv venv
 ```
 
 ### MacOS
