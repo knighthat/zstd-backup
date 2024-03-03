@@ -11,7 +11,7 @@ from src.converter import size_converter, time_converter
 from src.parser import parse_date
 
 
-def delete_oldest(backups: list[str]) -> list[str]:
+def delete_oldest(backups: list) -> list:
     backups.sort(key=lambda x: parse_date(dir.basename(x)))
 
     if len(backups) > 1:
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         logger.exception(e)
         exit(3)
 
-    old_backups: list[str] = dir.scan_4_backup(profile.destination)
+    old_backups: list = dir.scan_4_backup(profile.destination)
 
     try:
         #

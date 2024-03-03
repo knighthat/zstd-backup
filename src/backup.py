@@ -11,7 +11,7 @@ class BackupProfile:
         #
         #   Ignore paths
         #
-        self.ignore: set[str] = set()
+        self.ignore = set()
         for path in config.ignore_paths:
             abspath: str = dir.abspath(path)
             self.ignore.add(abspath)
@@ -34,13 +34,13 @@ class BackupProfile:
         #
         self.filename = f'{today.strftime(time_format)}.zstd'
 
-    def _set_children(self, paths: set[str]) -> None:
+    def _set_children(self, paths: set) -> None:
         """
         Loop through provided paths, and add filtered
         paths to 'self.children'
         :param paths: to compress
         """
-        self.children: set[str] = set()
+        self.children = set()
 
         def _add_file(path: str) -> None:
             """
@@ -131,7 +131,7 @@ class BackupProfile:
 
 class Backup:
 
-    def __init__(self, backup: list[str], destination: str, keep: int, ignore: list[str] = None) -> None:
+    def __init__(self, backup: list, destination: str, keep: int, ignore: list = None) -> None:
         self.ignore = [] if ignore is None else ignore
         self._set_destination(destination)
         self._set_children(backup)
@@ -148,8 +148,8 @@ class Backup:
             os.makedirs(self.destination)
         logger.debug(f'Backup will be saved to: {self.destination}')
 
-    def _set_children(self, paths: list[str]) -> None:
-        self.children: list[str] = []
+    def _set_children(self, paths: list) -> None:
+        self.children = []
 
         def _add_file(path: str) -> None:
             for ign in self.ignore:
@@ -221,7 +221,7 @@ class Backup:
         return size
 
 
-def del_old_backups(backups: list[str], days: int) -> None:
+def del_old_backups(backups: list, days: int) -> None:
     logger.info(f'Deleting old backups that were created {days} day(s) ago...')
     if len(backups) == 0:
         logger.info('No old backup found! Skipping this step...')

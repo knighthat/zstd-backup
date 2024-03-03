@@ -153,7 +153,7 @@ class DeleteOlBackupTests(unittest.TestCase):
             2: 1,
             1: 0
         }
-        backups: list[str] = scan_4_backup(self.path)
+        backups: list = scan_4_backup(self.path)
 
         for days, remain in values.items():
             backup.del_old_backups(backups, days)

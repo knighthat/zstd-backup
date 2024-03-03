@@ -61,7 +61,7 @@ def time_converter(seconds: float) -> str:
         units['minute'], units['second'] = divmod(units['second'], 60)
 
     " String builder prevents repeated add statement "
-    builder: list = []
+    builder = []
     for unit, value in units.items():
         " Skip adding time if value of that time unit equals 0 "
         if value == 0:

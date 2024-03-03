@@ -117,9 +117,9 @@ class ZstdArguments:
 
 class Configuration:
     log_level: int = INFO
-    include: set[str] = set()
+    include = set()
     destination: str = join(PROJECT_DIR, 'backups')
-    ignore_paths: set[str] = set()
+    ignore_paths = set()
     old_backup_settings: OldBackupSettings
     zstd_arguments: ZstdArguments
 

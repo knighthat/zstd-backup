@@ -4,7 +4,7 @@ from src.converter import size_converter, time_converter
 
 
 class SizeConverterTest(unittest.TestCase):
-    values: dict[int, str] = {
+    values: dict = {
         123964695035118467: '110.1 PiB',
         718738095144875397043302: '608.79 ZiB',
         106900107238: '99.56 GiB',
@@ -33,7 +33,7 @@ class SizeConverterTest(unittest.TestCase):
 
 
 class TimeConverterTest(unittest.TestCase):
-    values: dict[float, str] = {
+    values: dict = {
         956197.496: '265 hours 36 minutes 37 seconds',
         474104.98: '131 hours 41 minutes 45 seconds',
         794202.525: '220 hours 36 minutes 43 seconds',

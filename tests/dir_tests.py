@@ -30,7 +30,7 @@ class FileAndFolderTest(unittest.TestCase):
 
 class BackupScannerTest(unittest.TestCase):
     path: str = os.path.join(TEST_DIR, 'dates')
-    dates: set[str] = set()
+    dates = set()
 
     @classmethod
     def setUp(cls):
@@ -55,7 +55,7 @@ class BackupScannerTest(unittest.TestCase):
         rmtree(cls.path)
 
     def test_scan_4_backup(self):
-        scanned: list[str] = scan_4_backup(self.path)
+        scanned: list = scan_4_backup(self.path)
         self.assertCountEqual(self.dates, scanned)
 
 
