@@ -129,6 +129,19 @@ arguments:
   # More threads equals faster compression time.
   # 0 will use all threads (also the default)
   threads: 4
+
+settings:
+  # Program will attempt to write to compressed
+  # file this many bytes per cycle.
+  # Higher number can cause I/O bottleneck
+  # If you're unsure, leave it at default 1024
+  write_chunk: 1024   # bytes
+  # Settings related to progress bar
+  # This function is still in Beta
+  progress_bar:
+    # Enabling progress bar may
+    # result in slower write.
+    enabled: true
 ```
 
 # Issues
