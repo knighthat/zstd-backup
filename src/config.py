@@ -115,6 +115,21 @@ class ZstdArguments:
                 f')')
 
 
+class ProgressBar:
+    enabled: bool = False
+
+    def __init__(self, configuration: dict):
+        self.enabled = configuration['enabled']
+
+
+class Settings:
+    write_chunk: int = 1024
+    progress_bar: ProgressBar
+
+    def __init__(self, settings: dict):
+        self.progress_bar = ProgressBar(settings['progress_bar'])
+
+
 class Configuration:
     log_level: int = INFO
     include = set()
@@ -122,6 +137,7 @@ class Configuration:
     ignore_paths = set()
     old_backup_settings: OldBackupSettings
     zstd_arguments: ZstdArguments
+    settings: Settings
 
     def __init__(self, configuration: dict):
         #
@@ -199,6 +215,11 @@ class Configuration:
         #   Set ZSTD Arguments
         #
         self.zstd_arguments = ZstdArguments(configuration['arguments'])
+
+        #
+        #   Set Settings
+        #
+        self.settings = Settings(configuration['settings'])
 
     def __str__(self):
         return (f'Configuration('
