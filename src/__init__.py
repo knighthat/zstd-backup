@@ -1,7 +1,7 @@
 from datetime import datetime
 from os.path import abspath, dirname
 
-__version__: str = '0.0.1'
+__version__: str = '0.0.2'
 __license__: str = 'MIT License'
 __author__: str = 'knighthat'
 __url__: str = 'https://github.com/knighthat/zstd-backup'
