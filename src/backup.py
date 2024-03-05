@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from functools import cache
 
 from src import today, time_format, PROJECT_DIR, dir, logger
 from src.config import Configuration
@@ -33,6 +34,10 @@ class BackupProfile:
         #   Name of compressed file
         #
         self.filename = f'{today.strftime(time_format)}.zstd'
+
+    @property
+    def size(self):
+        return self.__len__()
 
     def _set_children(self, paths: set) -> None:
         """
@@ -79,6 +84,7 @@ class BackupProfile:
             elif os.path.isfile(abspath):
                 _add_file(abspath)
 
+    @cache
     def __len__(self) -> int:
         """
         Calculate the size (in bytes)
