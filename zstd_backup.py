@@ -57,7 +57,7 @@ if __name__ == '__main__':
             exit(0)
         else:
             comp_size: str = size_converter(total_size)
-            logger.info(f'{profile.filename} needs up to {comp_size} bytes to store!')
+            logger.info(f'{profile.filename} needs up to {comp_size} to store!')
 
         logger.debug(str(profile))
     except Exception as e:
