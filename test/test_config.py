@@ -74,6 +74,20 @@ class ZstdArgumentsTest(unittest.TestCase):
         self.assertEqual(2, configuration.threads)
 
 
+class SettingsTest(unittest.TestCase):
+    config: Configuration
+
+    @classmethod
+    def setUpClass(cls):
+        cls.config = Configuration(valid_config)
+
+    def test_write_chunk(self):
+        self.assertEqual(1024, self.config.settings.write_chunk)
+
+    def test_progress_bar(self):
+        self.assertTrue(self.config.settings.progress_bar.enabled)
+
+
 class ConfigurationTest(unittest.TestCase):
     config: Configuration
 

@@ -17,6 +17,12 @@ valid_config: dict = {
     'arguments': {
         'level': 1,
         'threads': 2
+    },
+    'settings': {
+        'write_chunk': 1024,
+        'progress_bar': {
+            'enabled': True
+        }
     }
 }
 
