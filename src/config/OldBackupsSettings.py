@@ -23,7 +23,7 @@ class OldBackupSettings:
     # to make some space for new backup
     aggressive: bool = False
 
-    def __init__(self, configuration: dict):
+    def __init__(self, configuration: dict) -> None:
         #
         #   Set Keep
         #
@@ -64,7 +64,7 @@ class OldBackupSettings:
             warn('"old_backups.aggressive must be a True or False!')
             warn(f'Use default value: {self.aggressive}')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f'OldBackupSettings('
             f'keep={self.keep}, '

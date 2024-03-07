@@ -18,7 +18,7 @@ class Configuration:
     zstd_arguments: ZstdArguments
     settings: Settings
 
-    def __init__(self, configuration: dict):
+    def __init__(self, configuration: dict) -> None:
         #
         #   Set Logging Level
         #
@@ -100,7 +100,7 @@ class Configuration:
         #
         self.settings = Settings(configuration['settings'])
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f'Configuration('
             f'level={self.log_level}, '

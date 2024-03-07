@@ -10,7 +10,7 @@ class ZstdArguments:
     # 0 will use all threads (also the default)
     threads: int = 0
 
-    def __init__(self, configuration: dict):
+    def __init__(self, configuration: dict) -> None:
         #
         #   Set Compression Level
         #
@@ -31,7 +31,7 @@ class ZstdArguments:
             warn(f'{threads} is not a valid number for "arguments.threads!"')
             warn(f'Use default value: {self.threads}')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f'ZstdArgument('
             f'level={self.level}, '
