@@ -1,7 +1,7 @@
 from src.logger import warn
 
 
-class OldBackupSettings:
+class OldBackupsSettings:
     # Number of backups to keep
     # Only keep when it's not
     # overdue for deletion.

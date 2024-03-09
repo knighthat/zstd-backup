@@ -2,7 +2,7 @@ import unittest
 from logging import DEBUG
 from platform import system
 
-from src.config import OldBackupSettings, ZstdArguments, Configuration
+from src.config import OldBackupsSettings, ZstdArguments, Configuration
 from test import valid_config
 
 
@@ -20,7 +20,7 @@ class OldBackupSettingsTest(unittest.TestCase):
             'remove_old_backups_for_space': 'False',
             'aggressive': 'True'
         }
-        configuration = OldBackupSettings(invalid_values)
+        configuration = OldBackupsSettings(invalid_values)
         self.assertNotEqual(1, configuration.keep)
         self.assertNotEqual(2, configuration.retention)
         self.assertFalse(configuration.del_old_4_space)
@@ -37,7 +37,7 @@ class OldBackupSettingsTest(unittest.TestCase):
             'remove_old_backups_for_space': False,
             'aggressive': True
         }
-        configuration = OldBackupSettings(values)
+        configuration = OldBackupsSettings(values)
         self.assertEqual(1, configuration.keep)
         self.assertEqual(2, configuration.retention)
         self.assertFalse(configuration.del_old_4_space)
