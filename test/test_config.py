@@ -139,10 +139,10 @@ class ConfigurationTest(unittest.TestCase):
         """
         Assert 'old_backups' properties
         """
-        self.assertEqual(1, self.config.old_backup_settings.keep)
-        self.assertEqual(2, self.config.old_backup_settings.retention)
-        self.assertFalse(self.config.old_backup_settings.del_old_4_space)
-        self.assertTrue(self.config.old_backup_settings.aggressive)
+        self.assertEqual(1, self.config.old_backups_settings.keep)
+        self.assertEqual(2, self.config.old_backups_settings.retention)
+        self.assertFalse(self.config.old_backups_settings.del_old_4_space)
+        self.assertTrue(self.config.old_backups_settings.aggressive)
 
     def test_zstd_arguments(self):
         """

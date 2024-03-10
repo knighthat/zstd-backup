@@ -63,14 +63,15 @@ if __name__ == '__main__':
         exit(3)
 
     old_backups: list = dir.scan_4_backup(profile.destination)
+    ob_settings = configuration.old_backups_settings
 
     try:
         #
         #   Step 3: Delete expired backups
         #
-        if configuration.old_backup_settings.retention > 0:
+        if ob_settings.retention > 0:
 
-            del_old_backups(old_backups, configuration.old_backup_settings.retention)
+            del_old_backups(old_backups, ob_settings.retention)
             old_backups = dir.scan_4_backup(profile.destination)
 
         else:
@@ -79,9 +80,9 @@ if __name__ == '__main__':
         #
         #   Step 4: Reduce the amount of backups to number defined in config.yml
         #
-        if configuration.old_backup_settings.keep > 0:
+        if ob_settings.keep > 0:
 
-            while len(old_backups) > configuration.old_backup_settings.keep - 1:
+            while len(old_backups) > ob_settings.keep - 1:
                 old_backups = delete_oldest(old_backups)
 
         else:
@@ -95,7 +96,7 @@ if __name__ == '__main__':
     #   Step 5: Check for empty space
     #
     if total_size > dir.get_free_space(profile.destination):
-        if configuration.old_backup_settings.del_old_4_space:
+        if ob_settings.del_old_4_space:
             """
             If 'old_backups.remove_old_backups_for_space' is set to "true".
             Program will attempt to remove older backups in order to make
@@ -110,7 +111,7 @@ if __name__ == '__main__':
                 if len(old_backups) == 0:
                     break
 
-                if len(old_backups) > 1 and not configuration.old_backup_settings.aggressive:
+                if len(old_backups) > 1 and not ob_settings.aggressive:
                     """
                     Break while-loop if 'old_backups.aggressive' is set to "false"
                     and only 1 backup left. Otherwise, delete to the last one.
