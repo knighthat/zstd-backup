@@ -34,6 +34,9 @@ class OldBackupsSettings:
 
     @property
     def keep(self) -> int:
+        """
+        :return: how many recent backups to keep
+        """
         return self._keep
 
     def _setKeep(self, value) -> None:
@@ -65,6 +68,12 @@ class OldBackupsSettings:
 
     @property
     def retention(self) -> int:
+        """
+        If backups were created before this many days ago.
+        It'll be marked for deletion.
+
+        :return: number of days
+        """
         return self._retention
 
     def _setRetention(self, value) -> None:

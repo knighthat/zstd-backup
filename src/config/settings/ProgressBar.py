@@ -16,6 +16,9 @@ class ProgressBar:
 
     @property
     def enabled(self) -> bool:
+        """
+        :return: whether program bar is enabled
+        """
         return self._enabled
 
     def _setEnabled(self, value) -> None:
