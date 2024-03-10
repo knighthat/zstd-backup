@@ -6,7 +6,7 @@ import yaml
 from src import dir, logger, PROJECT_DIR
 from src.backup import BackupProfile, del_old_backups
 from src.compress import zstd_compress
-from src.config import Configuration, verify
+from src.config import Configuration
 from src.converter import size_converter, time_converter
 from src.parser import parse_date
 
@@ -33,9 +33,6 @@ if __name__ == '__main__':
 
         # Load log level from config.yml
         logger.consoleHandler.setLevel(configuration.log_level)
-
-        if verify(configuration):
-            logger.debug('Verification complete!')
 
         logger.debug(str(configuration))
     except Exception as e:
