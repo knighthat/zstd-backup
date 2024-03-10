@@ -2,6 +2,10 @@ from os.path import join
 from platform import system
 
 from src import PROJECT_DIR
+from src import logger
+
+logger.consoleHandler.setLevel(50)
+logger.logger.removeHandler(logger.fileHandler)
 
 valid_config: dict = {
     'console_log_level': 'DEBUG',
