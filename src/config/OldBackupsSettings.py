@@ -1,75 +1,163 @@
-from src.logger import warn
+from src.logger import debug, info, warn
+from src.utils.type import verify
 
 
 class OldBackupsSettings:
-    # Number of backups to keep
-    # Only keep when it's not
-    # overdue for deletion.
-    keep: int = 5
-    # If a backup's creation date
-    # exceeds this number, it'll
-    # be deleted.
-    retention: int = 30
-    # Should this program delete
-    # older backups (even if it was
-    # within retention days and
-    # total files less than 'keep')
-    # to save space for new backup.
-    # This option always keeps the most
-    # recent backup unless 'aggressive'
-    # is set to True.
-    del_old_4_space: bool = False
-    # If True, delete to the last backup
-    # to make some space for new backup
-    aggressive: bool = False
+    _configuration: dict
 
     def __init__(self, configuration: dict) -> None:
-        #
-        #   Set Keep
-        #
-        keep = configuration['keep']
-        if isinstance(keep, int):
-            self.keep = int(keep)
-        else:
-            warn(f'{keep} is not a valid number for "old_backups.keep!"')
-            warn(f'Use default value: {self.keep}')
+        self._configuration = configuration
 
         #
-        #   Set Retention
+        #   Old backups to keep
         #
-        retention = configuration['retention']
-        if isinstance(retention, int):
-            self.retention = int(retention)
-        else:
-            warn(f'{retention} is not a valid number for "old_backups.retention!"')
-            warn(f'Use default value: {self.retention}')
+        self._keep: int
+        self._setKeep(self['keep'])
 
         #
-        #   Set Delete Old Backups For Space Boolean
+        #   Retention
         #
-        del_old_4_space = configuration['remove_old_backups_for_space']
-        if isinstance(del_old_4_space, bool):
-            self.del_old_4_space = del_old_4_space
-        else:
-            warn('"old_backups.remove_old_backups_for_space must be a True or False!')
-            warn(f'Use default value: {self.del_old_4_space}')
+        self._retention: int
+        self._setRetention(self['retention'])
 
         #
-        #   Set Aggressive Boolean
+        #   Remove old backups for space
         #
-        aggressive = configuration['aggressive']
-        if isinstance(aggressive, bool):
-            self.aggressive = aggressive
-        else:
-            warn('"old_backups.aggressive must be a True or False!')
-            warn(f'Use default value: {self.aggressive}')
+        self._del_old_4_space: bool
+        self._setDelOld4Space(self['remove_old_backups_for_space'])
+
+        #
+        #   Aggressive removal
+        #
+        self._aggressive: bool
+        self._setAggressive(self['aggressive'])
+
+    @property
+    def keep(self) -> int:
+        return self._keep
+
+    def _setKeep(self, value) -> None:
+        """
+        Set number of old backups to keep
+
+        :param value: number of old backups to keep
+        """
+        try:
+            fromfile: int = verify(value, int)
+
+            if fromfile < 0:
+                # Warn about negative number
+                warn(f'Number of old backup to keep must be greater or equal to 0! '
+                     f'Corrected to 0 (no deletion).')
+                # Correct to 0
+                fromfile = 0
+
+            self._keep = fromfile
+
+        except TypeError:
+            warn(f'Unrecognized input \'{value}\'. Use default value: 0.')
+            self._keep = 0
+
+        debug(f'Number of old backups to keep: {self.keep}')
+        if self.keep == 0:
+            info(f'Number of backups to keep is set to 0. '
+                 f'Keep all unless it is overdue for deletion')
+
+    @property
+    def retention(self) -> int:
+        return self._retention
+
+    def _setRetention(self, value) -> None:
+        """
+        Set days to keep old backups
+
+        :param value: number of days before an old backup gets expire
+        """
+        try:
+            fromfile: int = verify(value, int)
+
+            if fromfile < 0:
+                # Warn about negative number
+                warn(f'Number of retention days must be greater or equal to 0! '
+                     f'Corrected to 0 (no deletion).')
+                # Correct to 0
+                fromfile = 0
+
+            self._retention = fromfile
+
+        except TypeError:
+            warn(f'Unrecognized input \'{value}\'. Use default value: 0.')
+            self._retention = 0
+
+        debug(f'Delete backups older than: {self.keep} day(s)')
+        if self.retention == 0:
+            info(f'Retention is set to 0. Keep all backups regardless of creation date.')
+
+    @property
+    def del_old_4_space(self) -> bool:
+        """
+        :return: whether the program will delete recent backups for space
+        """
+        return self._del_old_4_space
+
+    def _setDelOld4Space(self, value) -> None:
+        """
+        Set whether program delete older backups (after retention and keep)
+        for space to fit new backup.
+
+        :param value: True, False, 0, or 1
+        """
+        try:
+            self._del_old_4_space = verify(value, bool, force_cast=True)
+        except TypeError:
+            warn(f'Unrecognized input \'{value}\'. Use default value: False.')
+            self._del_old_4_space = False
+
+        debug(f'Delete older backups for space: {self.del_old_4_space}')
+
+    @property
+    def aggressive(self) -> bool:
+        """
+        Only works if 'remove_old_backups_for_space' is enabled
+
+        If True, the program will delete most recent backup
+        in order to make space for new compressed file.
+        Otherwise, it'll keep the most recent backup.
+
+        :return: whether the program will delete most recent backup for space
+        """
+        return self._aggressive
+
+    def _setAggressive(self, value) -> None:
+        """
+        Set whether program delete most recent backup
+        (after retention, keep, old backups deletion)
+        to make space for new backup.
+
+        :param value: True, False, 0, or 1
+        """
+        try:
+            self._aggressive = verify(value, bool, force_cast=True)
+        except TypeError:
+            warn(f'Unrecognized input \'{value}\'. Use default value: False.')
+            self._aggressive = False
+
+        debug(f'Delete older backups for space: {self.aggressive}')
+
+    def __exist__(self, item: str) -> bool:
+        return item in self._configuration
+
+    def __getitem__(self, item: str):
+        if not self.__exist__(item):
+            raise KeyError(f'\'{item}\' does NOT exist!')
+        return self._configuration[item]
 
     def __str__(self) -> str:
         return (
-            f'OldBackupSettings('
+            'OldBackupSettings('
             f'keep={self.keep}, '
             f'retention={self.retention}, '
             f'del_old_4_space={self.del_old_4_space}, '
             f'aggressive={self.aggressive}'
-            f')'
+            ')'
         )

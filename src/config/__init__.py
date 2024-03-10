@@ -1,143 +1,252 @@
-from logging import DEBUG, INFO, WARN, ERROR, FATAL
-from multiprocessing import cpu_count as cpus
-from os.path import join
+from __future__ import annotations
 
-from src import PROJECT_DIR
-from src.logger import warn
-from .OldBackupsSettings import OldBackupSettings
+from logging import DEBUG, INFO, WARN, ERROR, FATAL
+
+from src.logger import warn, debug
+from src.utils.type import verify
+from .OldBackupsSettings import OldBackupsSettings
 from .ZstdArguments import ZstdArguments
 from .settings import Settings
 
 
 class Configuration:
-    log_level: int = INFO
-    include = set()
-    destination: str = join(PROJECT_DIR, 'backups')
-    ignore_paths = set()
-    old_backup_settings: OldBackupSettings
-    zstd_arguments: ZstdArguments
-    settings: Settings
+    _configuration: dict
 
     def __init__(self, configuration: dict) -> None:
-        #
-        #   Set Logging Level
-        #
-        log_level = configuration['console_log_level']
-        # If value of 'console_log_level' is not a string,
-        # then set 'log_level' to its str value
-        if not isinstance(log_level, str):
-            log_level = str(log_level)
-
-        # Determine log level or throw warning and use default value (INFO)
-        if log_level.upper() == 'DEBUG':
-            self.log_level = DEBUG
-        elif log_level.upper() == 'WARN' or log_level.upper() == 'WARNING':
-            self.log_level = WARN
-        elif log_level.upper() == 'ERROR':
-            self.log_level = ERROR
-        elif log_level.upper() == 'FATAL':
-            self.log_level = FATAL
-        elif log_level.upper() != 'INFO':
-            warn(f'Unknown log level: {log_level}. Use "INFO" as fallback!')
+        self._configuration = configuration
 
         #
-        #   Add Include Paths
+        #   Log level
         #
-        include = configuration['include']
-        if not isinstance(include, list):
-            # If 'include' isn't a list of paths but a
-            # single string, then add that string as
-            # 1 of the children. Otherwise, throw error
-            # and return code 1
-            if isinstance(include, str):
-                self.include.add(str(include))
-            else:
-                raise TypeError('Value of "include" is not a string')
+        self._log_level: int = INFO
+        self._setLogLevel(self['console_log_level'])
+
+        #
+        #   Children
+        #
+        self._include: set = set()
+        self._setChildren(self['include'])
+
+        #
+        #   Destination
+        #
+        self._destination: str
+        self._setDestination(self['destination'])
+
+        #
+        #   Ignore paths
+        #
+        self._ignore_paths: set = set()
+        self._setIgnorePaths(self['ignore'])
+
+        #
+        #   Old backups settings
+        #
+        self._old_backups_settings: OldBackupsSettings
+        self._setOldBackupsSettings(self['old_backups'])
+
+        #
+        #   ZSTD arguments
+        #
+        self._zstd_arguments: ZstdArguments
+        self._setZstdArguments(self['arguments'])
+
+        #
+        #   Settings
+        #
+        self._settings: Settings
+        self._setSettings(self['settings'])
+
+    @property
+    def log_level(self) -> int:
+        """
+        Determine what console logs will be shown to users.
+        Higher level means less outputs.
+
+        Possible values: DEBUG, INFO, WARN, ERROR, FATAL
+
+        :return: level as an integer
+        """
+        return self._log_level
+
+    def _setLogLevel(self, value) -> None:
+        """
+        Parse 'value' to logging's level.
+        If an unknown value is provided, use 'INFO' as fallback
+
+        :param value: level in text
+
+        :raise TypeError: if value's type wasn't str
+        """
+        # Confirms type of 'console_log_level'
+        fromfile: str = verify(value, str, 'INFO')
+
+        # Match value from 'console_log_level' to actual level (integer)
+        if fromfile.upper() == 'DEBUG':
+            self._log_level = DEBUG
+        elif fromfile.upper() == 'WARN' or fromfile.upper() == 'WARNING':
+            self._log_level = WARN
+        elif fromfile.upper() == 'ERROR':
+            self._log_level = ERROR
+        elif fromfile.upper() == 'FATAL':
+            self._log_level = FATAL
+        elif fromfile.upper() != 'INFO':
+            warn(f'Unknown log level: {fromfile}. Use "INFO" as fallback!')
+
+        debug(f'Logging @ level \'{self.log_level}\'')
+
+    @property
+    def include(self) -> set:
+        """
+        :return: a set of paths to be included with the compressed file
+        """
+        return self._include
+
+    def _setChildren(self, value) -> None:
+        """
+        Add path(s) from 'value'.
+
+        :param value:
+            can either be a string (single path) or list (multiple paths)
+
+        :raise TypeError: if 'value' was neither a str nor a list
+        """
+        fromfile: str | list = verify(value, (list, str))
+
+        if len(fromfile) == 0:
+            # Path to be included in compressed file must not be empty
+            raise Exception('Please provide at least 1 path to compress!')
+
+        if isinstance(fromfile, str):
+            # If provided value is a string, add it to set
+            self._include.add(fromfile)
         else:
-            # Add all provided paths to set
-            for path in include:
-                self.include.add(path)
+            # If provided value is a list, add all to set
+            self._include.update(fromfile)
 
-        #
-        #   Set Destination
-        #
-        destination = configuration['destination']
-        if not isinstance(destination, str):
-            # Raise error and exit if 'destination'
-            # isn't a string.
-            raise TypeError('Destination must be a string!')
-        self.destination = str(destination)
+        debug(f'Include:  {", ".join(self.include)}')
 
-        #
-        #   Set Ignore Paths
-        #
-        ignore = configuration['ignore']
-        if not isinstance(ignore, list):
-            # If 'ignore' isn't a list of paths but a
-            # single string, then add that string as
-            # 1 of the children. Otherwise, raise error
-            if isinstance(ignore, str):
-                self.ignore_paths.add(str(ignore))
-            else:
-                raise TypeError('Value of "ignore" is not a string')
+    @property
+    def destination(self) -> str:
+        """
+        :return: path to save compressed file
+        """
+        return self._destination
+
+    def _setDestination(self, value) -> None:
+        """
+        Set location to save compressed file
+
+        :param value: path to save file (relative path is OK)
+        """
+        fromfile: str = verify(value, str)
+
+        if not fromfile:
+            # Path to save compressed file must not be empty
+            raise Exception('Empty destination!')
         else:
-            # Add all provided paths to set
-            for path in ignore:
-                self.ignore_paths.add(path)
+            self._destination = fromfile
 
-        #
-        #   Set Old Backup Settings
-        #
-        self.old_backup_settings = OldBackupSettings(configuration['old_backups'])
+        debug(f'Save compressed file to \'{self.destination}\'')
 
-        #
-        #   Set ZSTD Arguments
-        #
-        self.zstd_arguments = ZstdArguments(configuration['arguments'])
+    @property
+    def ignore_paths(self) -> set:
+        """
+        :return: paths that are not included with the compressed file
+        """
+        return self._ignore_paths
 
-        #
-        #   Set Settings
-        #
-        self.settings = Settings(configuration['settings'])
+    def _setIgnorePaths(self, value) -> None:
+        """
+        Add path(s) to collection of path should NOT
+        be included in the compressed file.
+
+        :param value: a path or list of paths to be ignored
+        """
+        fromfile: str | list = verify(value, (list, str))
+
+        if isinstance(fromfile, str):
+            # If provided value is a string, add it to set
+            self._ignore_paths.add(fromfile)
+        else:
+            # If provided value is a list, add all to set
+            self._ignore_paths.update(fromfile)
+
+        debug(f'Paths to ignore: {", ".join(self.ignore_paths)}')
+
+    @property
+    def old_backups_settings(self) -> OldBackupsSettings:
+        """
+        :return: an instance of OldBackupsSettings
+        """
+        return self._old_backups_settings
+
+    def _setOldBackupsSettings(self, value) -> None:
+        """
+        Create an instance of OldBackupsSettings from
+        provided dictionary.
+
+        :param value: dict contains keys of 'old_backups' from config.yml
+        """
+        fromfile: dict = verify(value, dict)
+        self._old_backups_settings = OldBackupsSettings(fromfile)
+
+        debug(f'Old backups settings: {str(self.old_backups_settings)}')
+
+    @property
+    def zstd_arguments(self) -> ZstdArguments:
+        """
+        :return: an instance of ZstdArguments
+        """
+        return self._zstd_arguments
+
+    def _setZstdArguments(self, value) -> None:
+        """
+        Create an instance of ZstdArguments from
+        provided dictionary.
+
+        :param value: dict contains keys of 'arguments' from config.yml
+        """
+        fromfile: dict = verify(value, dict)
+        self._zstd_arguments = ZstdArguments(fromfile)
+
+        debug(f'ZSTD arguments: {str(self.zstd_arguments)}')
+
+    @property
+    def settings(self) -> Settings:
+        """
+        :return: an instance of Settings
+        """
+        return self._settings
+
+    def _setSettings(self, value) -> None:
+        """
+        Create an instance of Settings from
+        provided dictionary.
+
+        :param value: dict contains keys of 'settings' from config.yml
+        """
+        fromfile: dict = verify(value, dict)
+        self._settings = Settings(fromfile)
+
+        debug(f'Settings: {str(self.settings)}')
+
+    def __exist__(self, item: str) -> bool:
+        return item in self._configuration
+
+    def __getitem__(self, item: str):
+        if not self.__exist__(item):
+            raise KeyError(f'\'{item}\' does NOT exist!')
+        return self._configuration[item]
 
     def __str__(self) -> str:
         return (
-            f'Configuration('
+            'Configuration('
             f'level={self.log_level}, '
             f'include={str(self.include)}, '
             f'destination={self.destination}, '
             f'ignore={str(self.ignore_paths)}, '
-            f'OldBackupSettings={str(self.old_backup_settings)}, '
+            f'OldBackupSettings={str(self.old_backups_settings)}, '
             f'ZstdArguments={str(self.zstd_arguments)}'
-            f')'
+            ')'
         )
-
-
-def verify(config: Configuration) -> bool:
-    """
-    Verify and apply correction (if applicable).
-
-    :param config: configuration instance to check
-    :return: only returns False if error is uncorrectable
-    """
-
-    if config.old_backup_settings.keep < 0:
-        warn(f'"old_backups.keep" cannot be a sub-zero number! Corrected to 0.')
-        config.old_backup_settings.keep = 0
-
-    if config.old_backup_settings.retention < 0:
-        warn(f'"old_backups.retention" cannot be a sub-zero number! Corrected to 0.')
-        config.old_backup_settings.retention = 0
-
-    if config.zstd_arguments.level > 22:
-        warn(f'"arguments.level" must not exceeds 22')
-        config.zstd_arguments.level = 22
-
-    if config.zstd_arguments.threads < 0:
-        warn(f'"arguments.threads" cannot be a sub-zero number! Corrected to 0.')
-        config.zstd_arguments.threads = 0
-
-    if config.zstd_arguments.threads == 0:
-        config.zstd_arguments.threads = cpus()
-
-    return True
