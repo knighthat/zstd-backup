@@ -20,7 +20,7 @@ class ProgressBar:
 
     def _setEnabled(self, value) -> None:
         try:
-            self._enabled = verify(value, bool, force_cast=True)
+            self._enabled = verify(value, bool)
         except TypeError:
             warn(f'Unrecognized input \'{value}\'. Use default value: False.')
             self._enabled = False

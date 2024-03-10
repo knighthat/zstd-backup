@@ -105,10 +105,10 @@ class OldBackupsSettings:
         Set whether program delete older backups (after retention and keep)
         for space to fit new backup.
 
-        :param value: True, False, 0, or 1
+        :param value: True or False
         """
         try:
-            self._del_old_4_space = verify(value, bool, force_cast=True)
+            self._del_old_4_space = verify(value, bool)
         except TypeError:
             warn(f'Unrecognized input \'{value}\'. Use default value: False.')
             self._del_old_4_space = False
@@ -134,10 +134,10 @@ class OldBackupsSettings:
         (after retention, keep, old backups deletion)
         to make space for new backup.
 
-        :param value: True, False, 0, or 1
+        :param value: True or False
         """
         try:
-            self._aggressive = verify(value, bool, force_cast=True)
+            self._aggressive = verify(value, bool)
         except TypeError:
             warn(f'Unrecognized input \'{value}\'. Use default value: False.')
             self._aggressive = False
