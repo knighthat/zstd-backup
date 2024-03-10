@@ -55,7 +55,7 @@ def verify(arg: Any, _type: T | tuple[T, ...], default: Any = None, force_cast: 
             debug(f'Attempting to force cast \'{arg}\' to {type_str}')
             return _type(arg)
 
-        raise TypeError(f'{arg} is not an instance of type {_type.__name__}')
+        raise TypeError(f'{arg} is not an instance of type {type_str}')
 
     else:
         debug(f'\'{arg}\' matches type of {type_str}')
