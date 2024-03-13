@@ -13,7 +13,7 @@ For more details, visit [facebook/zstd](https://github.com/facebook/zstd)
 
 ## Requirements
 
-1. Python 3.11
+1. Python (3.7 - 3.13)
     - Linux: Included in most modern distros
     - [Windows](https://www.python.org/downloads/windows/)
     - [MacOS](https://www.python.org/downloads/macos/)
