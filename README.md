@@ -9,6 +9,25 @@ and is compatible with tar command
 
 For more details, visit [facebook/zstd](https://github.com/facebook/zstd)
 
+---
+
+# Table of contents
+
+* [Requirements](#requirements)
+    1. Python
+    2. Git
+* [Setup](#setup)
+    1. Clone repo
+    2. Create virtual environment
+    3. Install dependencies
+    4. Edit configuration
+    5. Execute program
+* [config.yml](#configyml)
+* [Issues](#issues)
+* [License](#license)
+
+---
+
 # Installation
 
 ## Requirements
