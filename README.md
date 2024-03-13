@@ -78,7 +78,7 @@ For more details, visit [facebook/zstd](https://github.com/facebook/zstd)
        venv/bin/python3 main.py
        ```
 
-## config.yml
+# config.yml
 
 > This is where you specify the files/folders that are included in the compressed file.  
 > Also the place where compressed file saved to.
