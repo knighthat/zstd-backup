@@ -26,56 +26,57 @@ For more details, visit [facebook/zstd](https://github.com/facebook/zstd)
 
 ## Setup
 
-1. Clone this repo
+1. Clone this repository
 
-```shell
-git clone --depth 1 https://github.com/knighthat/zstd-backup && cd zstd-backup
-```
+   ```shell
+   git clone --depth 1 https://github.com/knighthat/zstd-backup && cd zstd-backup
+   ```
 
 2. Create virtual environment (recommended, or use global python)
 
-### Windows
+    * **Windows**
 
-> Run this in your command prompt or powershell
+      > Run this in your command prompt or powershell
 
-```shell
-python -m venv venv
-```
+      ```shell
+      python -m venv venv
+      ```
 
-### Linux
+    * **Linux**
 
-> Some distros require you to install `venv` module before executing this command
+      > Some distros require you to install `venv` module before executing this command
 
-```shell
-/usr/bin/python3 -m venv venv
-```
+       ```shell
+       /usr/bin/python3 -m venv venv
+       ```
 
-### MacOS
+    * MacOS
 
-```shell
-python -m venv venv
-```
+       ```shell
+       python -m venv venv
+       ```
 
 3. Install required packages
 
-```shell
-venv/bin/pip install -r requirements.txt
-```
+   ```shell
+   venv/bin/pip install -r requirements.txt
+   ```
 
 4. Edit configuration [config.yml](#configyml)
+
 5. Run program by executing `main.py` script
 
-### Windows
+    * Windows
 
-```shell
-venv\Scripts\python zstd_backup.py
-```
+       ```shell
+       venv\Scripts\python zstd_backup.py
+       ```
 
-### Others
+    * Others
 
-```shell
-venv/bin/python3 main.py
-```
+       ```shell
+       venv/bin/python3 main.py
+       ```
 
 ## config.yml
 
