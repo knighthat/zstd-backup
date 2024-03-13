@@ -4,16 +4,16 @@ from logging import DEBUG, INFO, WARN, ERROR, FATAL
 
 from src.logger import warn, debug
 from src.utils.type import verify
+from .Abstract import ConfigTemplate
 from .OldBackupsSettings import OldBackupsSettings
 from .ZstdArguments import ZstdArguments
 from .settings import Settings
 
 
-class Configuration:
-    _configuration: dict
+class Configuration(ConfigTemplate):
 
     def __init__(self, configuration: dict) -> None:
-        self._configuration = configuration
+        super().__init__(configuration)
 
         #
         #   Log level
@@ -230,14 +230,6 @@ class Configuration:
         self._settings = Settings(fromfile)
 
         debug(f'Settings: {str(self.settings)}')
-
-    def __exist__(self, item: str) -> bool:
-        return item in self._configuration
-
-    def __getitem__(self, item: str):
-        if not self.__exist__(item):
-            raise KeyError(f'\'{item}\' does NOT exist!')
-        return self._configuration[item]
 
     def __str__(self) -> str:
         return (

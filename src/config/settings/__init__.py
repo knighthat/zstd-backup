@@ -1,13 +1,13 @@
 from src.logger import debug, warn
 from src.utils.type import verify
 from .ProgressBar import ProgressBar
+from ..Abstract import ConfigTemplate
 
 
-class Settings:
-    _configuration: dict
+class Settings(ConfigTemplate):
 
     def __init__(self, configuration: dict) -> None:
-        self._configuration = configuration
+        super().__init__(configuration)
 
         #
         #   Write chunk
@@ -69,14 +69,6 @@ class Settings:
         self._progress_bar = ProgressBar(fromfile)
 
         debug(f'Progress bar: {str(self.progress_bar)}')
-
-    def __exist__(self, item: str) -> bool:
-        return item in self._configuration
-
-    def __getitem__(self, item: str):
-        if not self.__exist__(item):
-            raise KeyError(f'\'{item}\' does NOT exist!')
-        return self._configuration[item]
 
     def __str__(self) -> str:
         return (

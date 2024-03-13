@@ -1,12 +1,12 @@
 from src.logger import debug, warn
 from src.utils.type import verify
+from ..Abstract import ConfigTemplate
 
 
-class ProgressBar:
-    _configuration: dict
+class ProgressBar(ConfigTemplate):
 
     def __init__(self, configuration: dict) -> None:
-        self._configuration = configuration
+        super().__init__(configuration)
 
         #
         #   On/Off
@@ -29,14 +29,6 @@ class ProgressBar:
             self._enabled = False
 
         debug(f'Enable progress bar? {self.enabled}')
-
-    def __exist__(self, item: str) -> bool:
-        return item in self._configuration
-
-    def __getitem__(self, item: str):
-        if not self.__exist__(item):
-            raise KeyError(f'\'{item}\' does NOT exist!')
-        return self._configuration[item]
 
     def __str__(self) -> str:
         return f'ProgressBar(enabled={self.enabled})'
