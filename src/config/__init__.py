@@ -7,6 +7,7 @@ from src.utils.type import verify
 from .Abstract import ConfigTemplate
 from .OldBackupsSettings import OldBackupsSettings
 from .ZstdArguments import ZstdArguments
+from .remote_storage import RemoteStorage
 from .settings import Settings
 
 
@@ -56,6 +57,12 @@ class Configuration(ConfigTemplate):
         #
         self._settings: Settings
         self._setSettings(self['settings'])
+
+        #
+        #   Remote Storage
+        #
+        self._remote_storage: RemoteStorage
+        self._setRemoteStorage(self['remote_storage'])
 
     @property
     def log_level(self) -> int:
@@ -230,6 +237,14 @@ class Configuration(ConfigTemplate):
         self._settings = Settings(fromfile)
 
         debug(f'Settings: {str(self.settings)}')
+
+    @property
+    def remote_storage(self) -> RemoteStorage:
+        return self._remote_storage
+
+    def _setRemoteStorage(self, value) -> None:
+        fromfile: dict = verify(value, dict)
+        self._remote_storage = RemoteStorage(fromfile)
 
     def __str__(self) -> str:
         return (
