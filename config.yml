@@ -4,7 +4,7 @@ console_log_level: INFO
 # All files and folders will be included
 # in the final compressed file.
 include:
-  - "/home/knighthat/Downloads/STG-backups-FF-125.0.2"
+  - '/path/to/compress'
 
 # Where to save this backup.
 # Must be a path (program creates dirs if path not exist)
