@@ -1,3 +1,4 @@
+import os
 from os.path import join
 from time import sleep, perf_counter
 
@@ -149,15 +150,16 @@ if __name__ == '__main__':
         logger.exception(e)
         exit(1)
 
-    if not configuration.remote_storage.enabled:
-        exit(0)
-
     try:
+        remote_storage = configuration.remote_storage
+        if not remote_storage.enabled:
+            exit(0)
+
         #
         #   Step 7: Send Compressed File to Remote Storage
         #
-        remote_server = configuration.remote_storage.server
-        credentials = configuration.remote_storage.credentials
+        remote_server = remote_storage.server
+        credentials = remote_storage.credentials
 
         client: paramiko.client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -169,7 +171,7 @@ if __name__ == '__main__':
         )
 
         fullpath: str = f'{profile.destination}/{profile.filename}'
-        remotepath = configuration.remote_storage.remote_path.format(profile.filename)
+        remotepath = remote_storage.remote_path.format(profile.filename)
 
         sftp = client.open_sftp()
         sftp.put(
@@ -180,5 +182,11 @@ if __name__ == '__main__':
 
         sftp.close()
         client.close()
+
+        #
+        #   Step 8: Delete Compressed File (if applicable)
+        #
+        if remote_storage.delete_after_transfer:
+            os.remove(fullpath)
     except Exception as e:
         logger.exception(e)
