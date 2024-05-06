@@ -147,6 +147,7 @@ if __name__ == '__main__':
     except Exception as e:
         logger.fatal('Error occurs while backing up!')
         logger.exception(e)
+        exit(1)
 
     if not configuration.remote_storage.enabled:
         exit(0)
