@@ -37,7 +37,7 @@ arguments:
   # Default level is 3
   # More at: https://python-zstandard.readthedocs.io/en/latest/compressor.html#zstdcompressor
   level: 3
-  # How many should the algo use.
+  # How many cores should the algo use.
   # More threads equals faster compression time.
   # 0 will use all threads (also the default)
   threads: 4
