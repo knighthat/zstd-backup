@@ -1,6 +1,7 @@
 from os.path import join
 from time import sleep, perf_counter
 
+import paramiko
 import yaml
 
 from src import dir, logger, PROJECT_DIR
@@ -145,4 +146,38 @@ if __name__ == '__main__':
         logger.info(f'Backup finished in {time_converter(stop - start)}')
     except Exception as e:
         logger.fatal('Error occurs while backing up!')
+        logger.exception(e)
+
+    if not configuration.remote_storage.enabled:
+        exit(0)
+
+    try:
+        #
+        #   Step 7: Send Compressed File to Remote Storage
+        #
+        remote_server = configuration.remote_storage.server
+        credentials = configuration.remote_storage.credentials
+
+        client: paramiko.client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        credentials.authorization.authorize(
+            client=client,
+            host=remote_server.host,
+            port=remote_server.port,
+            username=credentials.username
+        )
+
+        fullpath: str = f'{profile.destination}/{profile.filename}'
+        remotepath = configuration.remote_storage.remote_path.format(profile.filename)
+
+        sftp = client.open_sftp()
+        sftp.put(
+            localpath=fullpath,
+            remotepath=remotepath,
+            callback=None
+        )
+
+        sftp.close()
+        client.close()
+    except Exception as e:
         logger.exception(e)
