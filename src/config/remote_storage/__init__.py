@@ -51,35 +51,36 @@ class RemoteStorage(ConfigTemplate):
         self._enabled: bool
         self._setEnabled(self['enabled'])
 
-        #
-        #   Type
-        #
-        self._type: StorageType
-        self._setType(self['type'])
+        if self._enabled: 
+            #
+            #   Type
+            #
+            self._type: StorageType
+            self._setType(self['type'])
 
-        #
-        #   Server
-        #
-        self._server: Server
-        self._setServer(self['server'])
+            #
+            #   Server
+            #
+            self._server: Server
+            self._setServer(self['server'])
 
-        #
-        #   Credentials
-        #
-        self._credentials: Credentials
-        self._setCredentials(self['credentials'])
+            #
+            #   Credentials
+            #
+            self._credentials: Credentials
+            self._setCredentials(self['credentials'])
 
-        #
-        #   Remote path
-        #
-        self._remote_path: str
-        self._setRemotePath(self['remote_path'])
+            #
+            #   Remote path
+            #
+            self._remote_path: str
+            self._setRemotePath(self['remote_path'])
 
-        #
-        #   Delete after transfer
-        #
-        self._delete_after_transfer: bool
-        self._setDeleteAfterTransfer(self['delete_after_transfer'])
+            #
+            #   Delete after transfer
+            #
+            self._delete_after_transfer: bool
+            self._setDeleteAfterTransfer(self['delete_after_transfer'])
 
     @property
     def enabled(self) -> bool:
