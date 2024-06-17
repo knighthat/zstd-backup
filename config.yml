@@ -58,7 +58,7 @@ settings:
 # Send compressed file to remote server
 remote_storage:
   enabled: false
-  # As of version 0.0.2, only SFTP is supported
+  # As of version 0.0.3, only SFTP is supported
   type: SFTP
   server:
     host: '127.0.0.1'
