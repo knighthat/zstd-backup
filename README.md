@@ -109,7 +109,7 @@ console_log_level: INFO
 # All files and folders will be included
 # in the final compressed file.
 include:
-  - "./test"
+  - '/path/to/compress'
 
 # Where to save this backup.
 # Must be a path (program creates dirs if path not exist)
@@ -119,10 +119,14 @@ destination: "./backups"
 # Must be in absolute form.
 # If '/path/to/ignore' is listed, any sub-folders and files
 # within that directory will be ignored.
-ignore:
-  - '/path/to/ignore1'
-  - '/path/to/ignore2'
-  - '/path/to/ignore3'
+# Since v0.0.3, you can use regular expression to ignore files.
+# For regex to match the entire path, use colons:
+# - ':ignore-\d+:'
+# 'ignore-1' matches the pattern but not '/path/to/ignore-1'
+# For regex to find matches in a string, use semi-colon:
+# - ';ignore-\d+;'
+# will match both 'ignore-1' and '/path/to/ignore-1'
+ignore: []
 
 old_backups:
   # How many backups should I keep (default: 5, 0 means unlimited)
@@ -145,7 +149,7 @@ arguments:
   # Default level is 3
   # More at: https://python-zstandard.readthedocs.io/en/latest/compressor.html#zstdcompressor
   level: 3
-  # How many should the algo use.
+  # How many cores should the algo use.
   # More threads equals faster compression time.
   # 0 will use all threads (also the default)
   threads: 4
@@ -162,6 +166,31 @@ settings:
     # Enabling progress bar may
     # result in slower write.
     enabled: true
+
+# Send compressed file to remote server
+remote_storage:
+  enabled: false
+  # As of version 0.0.3, only SFTP is supported
+  type: SFTP
+  server:
+    host: '127.0.0.1'
+    port: 22
+  credentials:
+    # Available protocols: PASSWORD, DSS, ED25519, RSA, ECDSA
+    # PASSWORD requires presence of 'password' field,
+    # others require 'keypath' and 'passphrase'
+    # Leave 'passphrase' empty if key isn't encrypted with one.
+    protocol: 'ED25519'
+    # Automatically switch to public/private key
+    # once 'private_key' is filled out.
+    username: username
+    keypath: ''
+    passphrase: ''
+  # Path must contain name you want the file to be
+  # '{}' will be replaced by the original name.
+  remote_path: '/remote/location/compressed.zstd'
+  # File won't be deleted if error occurs during transfer
+  delete_after_transfer: false
 ```
 
 # Issues

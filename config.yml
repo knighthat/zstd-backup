@@ -14,7 +14,14 @@ destination: "./backups"
 # Must be in absolute form.
 # If '/path/to/ignore' is listed, any sub-folders and files
 # within that directory will be ignored.
-ignore: [ ]
+# Since v0.0.3, you can use regular expression to ignore files.
+# For regex to match the entire path, use colons:
+# - ':ignore-\d+:'
+# 'ignore-1' matches the pattern but not '/path/to/ignore-1'
+# For regex to find matches in a string, use semi-colon:
+# - ';ignore-\d+;'
+# will match both 'ignore-1' and '/path/to/ignore-1'
+ignore: []
 
 old_backups:
   # How many backups should I keep (default: 5, 0 means unlimited)

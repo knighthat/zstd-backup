@@ -1,10 +1,15 @@
 import os
 from datetime import timedelta
 from functools import cache
+import re
 
 from src import today, time_format, PROJECT_DIR, dir, logger
 from src.config import Configuration
 from src.parser import parse_date
+
+
+match_all_pattern = re.compile(r'^:[^:]+:$')
+match_partial_pattern = re.compile(r'^;[^;]+;$')
 
 
 class BackupProfile:
@@ -14,7 +19,11 @@ class BackupProfile:
         #
         self.ignore = set()
         for path in config.ignore_paths:
-            abspath: str = dir.abspath(path)
+            abspath: str
+            if match_all_pattern.match(path) or match_partial_pattern.match(path):
+                abspath = path
+            else:
+                abspath = dir.abspath(path)
             self.ignore.add(abspath)
 
         #
@@ -53,12 +62,23 @@ class BackupProfile:
             path isn't listed in 'self.ignore_paths'
             :param path: to compress
             """
+            ignore_file: bool = False
+            
             for ign in self.ignore:
-                if path.startswith(ign):
-                    logger.debug(f'Ignore {path}!')
-                    return
+                if match_all_pattern.match(ign):
+                    ignore_file = re.compile(ign[1:-1]).match(path)
+                elif match_partial_pattern.match(ign):
+                    ignore_file = re.compile(ign[1:-1]).search(path)
+                else:
+                    ignore_file = path.startswith(ign)
+                
+                if ignore_file:
+                    break
 
-            self.children.add(path)
+            if ignore_file:
+                logger.debug(f'Ignore {path}!')
+            else:
+                self.children.add(path)
 
         def _add_dir(path: str) -> None:
             """
