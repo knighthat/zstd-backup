@@ -1,5 +1,5 @@
 import os
-from datetime import timedelta
+from datetime import timedelta, datetime
 from functools import cache
 import re
 
@@ -247,16 +247,42 @@ class Backup:
         return size
 
 
-def del_old_backups(backups: list, days: int) -> None:
+def del_old_backups(old_backup_paths: list, days: int) -> None:
     logger.info(f'Deleting old backups that were created {days} day(s) ago...')
-    if len(backups) == 0:
+    if len(old_backup_paths) == 0:
         logger.info('No old backup found! Skipping this step...')
 
+    delta: timedelta = timedelta(days=days)
+    old_backups: list = [OldBackup(x) for x in old_backup_paths]
+    
     try:
-        for file in backups:
-            basename: str = dir.basename(file)
-            if today - parse_date(basename) > timedelta(days=days):
-                dir.delete(file)
+        for backup in old_backups:
+            if today - backup.ctime > delta:
+                dir.delete(backup.filepath)
     except Exception as e:
         logger.error(f'Error occurs while deleting old backups!')
-        logger.exception(e)
+        logger.exception(e)   
+
+
+class OldBackup:
+    def __init__(self, filepath: str) -> None:
+        # Check if file exists or is file
+        if not os.path.exists(filepath):
+            logger.warn(f'{filepath} does not exist!')
+            return
+        elif not os.path.isfile(filepath):
+            logger.warn(f'{filepath} is not a file!')
+            return
+        
+        self._filepath = filepath
+        self._ctime = os.path.getctime(filepath)
+        
+    @property
+    def filepath(self) -> str:
+        return self._filepath
+    
+    @property
+    @cache
+    def ctime(self) -> datetime:
+        return datetime.fromtimestamp(self._ctime)
+        

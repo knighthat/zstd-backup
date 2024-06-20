@@ -6,22 +6,23 @@ import paramiko
 import yaml
 
 from src import dir, logger, PROJECT_DIR
-from src.backup import BackupProfile, del_old_backups
+from src.backup import BackupProfile, del_old_backups, OldBackup
 from src.compress import zstd_compress
 from src.config import Configuration
 from src.converter import size_converter, time_converter
 from src.parser import parse_date
 
 
-def delete_oldest(backups: list) -> list:
-    backups.sort(key=lambda x: parse_date(dir.basename(x)))
-
-    if len(backups) > 1:
-        dir.delete(backups[0])
-        backups.pop(0)
-
-    return backups
-
+def delete_oldest(old_backup_paths: list) -> list:
+    old_backups: list = [OldBackup(x) for x in old_backup_paths]
+    old_backups.sort(key=lambda x: x.ctime)
+    
+    if len(old_backups) > 1:
+        backup_path: str = old_backups.pop(0).filepath
+        dir.delete(backup_path)
+        
+    return [x.filepath for x in old_backups]
+        
 
 if __name__ == '__main__':
 

@@ -9,6 +9,8 @@ from shutil import rmtree
 from src import PROJECT_DIR, logger
 
 
+ZSTD_MAGIC_NUMBER = bytes([0x28, 0xb5, 0x2f, 0xfd])
+
 class ReturnCode(Enum):
     NOT_EXIST = 0
     EXIST = 1
@@ -39,11 +41,12 @@ def scan_4_backup(destination: str) -> list:
     if not folder_exist(destination):
         logger.warn(f'{destination} is not a directory!')
         return results
-
-    filepattern: str = r'\d{4}-\w{3}-\d{2} \d{2}-\d{2}-\d{6}.zstd'
+    
     for file in os.listdir(destination):
-        if match(filepattern, file):
-            results.append(os.path.join(destination, file))
+        filepath = os.path.join(destination, file)
+        with open(filepath, 'rb') as zstd:
+            if zstd.read(4) == ZSTD_MAGIC_NUMBER:
+                results.append(filepath)
 
     logger.debug(f'Found ({len(results)}) backup(s): {results}')
     return results
