@@ -10,7 +10,6 @@ from src.backup import BackupProfile, del_old_backups, OldBackup
 from src.compress import zstd_compress
 from src.config import Configuration
 from src.converter import size_converter, time_converter
-from src.parser import parse_date
 
 
 def delete_oldest(old_backup_paths: list) -> list:
