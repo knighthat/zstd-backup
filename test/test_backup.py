@@ -83,16 +83,9 @@ class BackupProfileTest(unittest.TestCase):
         This test performs check on 'filename' property of BackupProfile
         An addition test to confirm that datetime is parsable
         """
-
-        " This pattern is the result of 'time_format' defined in __init__.py"
-        namepattern: str = r'\d{4}-\w{3}-\d{2} \d{2}-\d{2}-\d{6}.zstd'
-        self.assertTrue(match(namepattern, self.profile.filename))
-
-        date: str = self.profile.filename.split('.')[0]
-        try:
-            datetime.strptime(date, time_format)
-        except:
-            self.fail(f'{date} is not a valid date according to format {time_format}!')
+        
+        filename: str = f'{valid_config['compressed_file_name']}.zstd'
+        self.assertEqual(filename, self.profile.filename)
 
     def test_length(self):
         """
