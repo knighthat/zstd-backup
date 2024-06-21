@@ -33,6 +33,12 @@ class Configuration(ConfigTemplate):
         #
         self._destination: str
         self._setDestination(self['destination'])
+        
+        #
+        #   File name
+        #
+        self._filename: str
+        self._setFileName(self['compressed_file_name'])
 
         #
         #   Ignore paths
@@ -245,6 +251,14 @@ class Configuration(ConfigTemplate):
     def _setRemoteStorage(self, value) -> None:
         fromfile: dict = verify(value, dict)
         self._remote_storage = RemoteStorage(fromfile)
+        
+    @property
+    def filename(self) -> str:
+        return self._filename
+    
+    def _setFileName(self, value) -> None:
+        fromfile: str = verify(value, str)
+        self._filename = fromfile    
 
     def __str__(self) -> str:
         return (

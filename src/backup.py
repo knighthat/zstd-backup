@@ -42,7 +42,7 @@ class BackupProfile:
         #
         #   Name of compressed file
         #
-        self.filename = f'{today.strftime(time_format)}.zstd'
+        self.filename = f'{config.filename}.zstd'
 
     @property
     def size(self):
