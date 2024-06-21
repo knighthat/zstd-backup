@@ -11,6 +11,7 @@ valid_config: dict = {
     'console_log_level': 'DEBUG',
     'include': [],
     'destination': '',
+    'compressed_file_name': 'zstd-backup',
     'ignore': '',
     'old_backups': {
         'keep': 1,
@@ -26,6 +27,22 @@ valid_config: dict = {
         'write_chunk': 1024,
         'progress_bar': {
             'enabled': True
+        }
+    },
+    'remote_storage': {
+        'enabled': False,
+        'type': 'SFTP',
+        'server': {
+            'host': '127.0.0.1',
+            'port': 22
+        },
+        'credentials': {
+            'protocol': 'ED25519',
+            'username': 'username',
+            'keypath': '',
+            'passphrase': '',
+            'remote_path': '/remote/location/compressed.zstd',
+            'delete_after_transfer': False,
         }
     }
 }
