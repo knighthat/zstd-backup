@@ -35,20 +35,16 @@ class BackupScannerTest(unittest.TestCase):
     @classmethod
     def setUp(cls):
         os.makedirs(cls.path, exist_ok=True)
-
-        # This for-loop will go from 45 to 0
-        # then it will subtract the date from today
-        # For example, i=2 will result in the
-        # date of 2 days before.
-        for i in range(45, -1, -1):
-            date: datetime = today - timedelta(days=i)
-
-            filename: str = f'{date.strftime(time_format)}.zstd'
+        
+        # Create 45 files with ZStandard's magic numbers
+        ZSTD_MAGIC_NUMBER = bytes([0x28, 0xb5, 0x2f, 0xfd])
+        for i in range(45):
+            filename: str = f'{i}.zstd'
             filepath: str = os.path.join(cls.path, filename)
             cls.dates.add(filepath)
-
-            with open(filepath, 'w'):
-                pass
+            
+            with open(filepath, 'wb') as file:
+                file.write(ZSTD_MAGIC_NUMBER)
 
     @classmethod
     def tearDown(cls):
