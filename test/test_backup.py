@@ -84,7 +84,7 @@ class BackupProfileTest(unittest.TestCase):
         An addition test to confirm that datetime is parsable
         """
         
-        filename: str = f'{valid_config['compressed_file_name']}.zstd'
+        filename: str = f'{valid_config["compressed_file_name"]}.zstd'
         self.assertEqual(filename, self.profile.filename)
 
     def test_length(self):
