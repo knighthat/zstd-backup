@@ -3,7 +3,6 @@ import os
 
 from src import __version__, __copyright__, PROJECT_DIR, today
 
-
 # Set log's location and create folder if needed
 workdir: str = os.path.join(PROJECT_DIR, 'logs')
 os.makedirs(workdir, exist_ok=True)
@@ -18,9 +17,8 @@ fileHandler.setLevel(logging.DEBUG)
 consoleHandler = logging.StreamHandler()
 consoleHandler.setLevel(logging.INFO)
 
-
 logging.basicConfig(
-    format='[%(asctime)s / %(levelname)-8.8s] -> %(message)s',
+    format='[%(asctime)s / %(levelname)-8s] -> %(message)s',
     datefmt='%H:%M:%S',
     level=logging.DEBUG,
     handlers=[fileHandler, consoleHandler]

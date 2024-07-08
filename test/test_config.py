@@ -2,7 +2,7 @@ import unittest
 from logging import DEBUG
 from platform import system
 
-from src.config import OldBackupSettings, ZstdArguments, Configuration
+from src.config import OldBackupsSettings, ZstdArguments, Configuration
 from test import valid_config
 
 
@@ -20,7 +20,7 @@ class OldBackupSettingsTest(unittest.TestCase):
             'remove_old_backups_for_space': 'False',
             'aggressive': 'True'
         }
-        configuration = OldBackupSettings(invalid_values)
+        configuration = OldBackupsSettings(invalid_values)
         self.assertNotEqual(1, configuration.keep)
         self.assertNotEqual(2, configuration.retention)
         self.assertFalse(configuration.del_old_4_space)
@@ -37,7 +37,7 @@ class OldBackupSettingsTest(unittest.TestCase):
             'remove_old_backups_for_space': False,
             'aggressive': True
         }
-        configuration = OldBackupSettings(values)
+        configuration = OldBackupsSettings(values)
         self.assertEqual(1, configuration.keep)
         self.assertEqual(2, configuration.retention)
         self.assertFalse(configuration.del_old_4_space)
@@ -72,6 +72,20 @@ class ZstdArgumentsTest(unittest.TestCase):
         configuration = ZstdArguments(values)
         self.assertEqual(1, configuration.level)
         self.assertEqual(2, configuration.threads)
+
+
+class SettingsTest(unittest.TestCase):
+    config: Configuration
+
+    @classmethod
+    def setUpClass(cls):
+        cls.config = Configuration(valid_config)
+
+    def test_write_chunk(self):
+        self.assertEqual(1024, self.config.settings.write_chunk)
+
+    def test_progress_bar(self):
+        self.assertTrue(self.config.settings.progress_bar.enabled)
 
 
 class ConfigurationTest(unittest.TestCase):
@@ -125,10 +139,10 @@ class ConfigurationTest(unittest.TestCase):
         """
         Assert 'old_backups' properties
         """
-        self.assertEqual(1, self.config.old_backup_settings.keep)
-        self.assertEqual(2, self.config.old_backup_settings.retention)
-        self.assertFalse(self.config.old_backup_settings.del_old_4_space)
-        self.assertTrue(self.config.old_backup_settings.aggressive)
+        self.assertEqual(1, self.config.old_backups_settings.keep)
+        self.assertEqual(2, self.config.old_backups_settings.retention)
+        self.assertFalse(self.config.old_backups_settings.del_old_4_space)
+        self.assertTrue(self.config.old_backups_settings.aggressive)
 
     def test_zstd_arguments(self):
         """

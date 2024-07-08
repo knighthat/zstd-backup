@@ -9,11 +9,30 @@ and is compatible with tar command
 
 For more details, visit [facebook/zstd](https://github.com/facebook/zstd)
 
+---
+
+# Table of contents
+
+* [Requirements](#requirements)
+    1. Python
+    2. Git
+* [Setup](#setup)
+    1. Clone repo
+    2. Create virtual environment
+    3. Install dependencies
+    4. Edit configuration
+    5. Execute program
+* [config.yml](#configyml)
+* [Issues](#issues)
+* [License](#license)
+
+---
+
 # Installation
 
 ## Requirements
 
-1. Python 3.11
+1. Python (3.8 - 3.13)
     - Linux: Included in most modern distros
     - [Windows](https://www.python.org/downloads/windows/)
     - [MacOS](https://www.python.org/downloads/macos/)
@@ -26,58 +45,59 @@ For more details, visit [facebook/zstd](https://github.com/facebook/zstd)
 
 ## Setup
 
-1. Clone this repo
+1. Clone this repository
 
-```shell
-git clone --depth 1 https://github.com/knighthat/zstd-backup && cd zstd-backup
-```
+   ```shell
+   git clone --depth 1 https://github.com/knighthat/zstd-backup && cd zstd-backup
+   ```
 
 2. Create virtual environment (recommended, or use global python)
 
-### Windows
+    * **Windows**
 
-> Run this in your command prompt or powershell
+      > Run this in your command prompt or powershell
 
-```shell
-python -m venv venv
-```
+      ```shell
+      python -m venv venv
+      ```
 
-### Linux
+    * **Linux**
 
-> Some distros require you to install `venv` module before executing this command
+      > Some distros require you to install `venv` module before executing this command
 
-```shell
-/usr/bin/python3 -m venv venv
-```
+       ```shell
+       /usr/bin/python3 -m venv venv
+       ```
 
-### MacOS
+    * MacOS
 
-```shell
-python -m venv venv
-```
+       ```shell
+       python -m venv venv
+       ```
 
 3. Install required packages
 
-```shell
-venv/bin/pip install -r requirements.txt
-```
+   ```shell
+   venv/bin/pip install -r requirements.txt
+   ```
 
 4. Edit configuration [config.yml](#configyml)
+
 5. Run program by executing `main.py` script
 
-### Windows
+    * Windows
 
-```shell
-venv\Scripts\python zstd_backup.py
-```
+       ```shell
+       venv\Scripts\python zstd_backup.py
+       ```
 
-### Others
+    * Others
 
-```shell
-venv/bin/python3 main.py
-```
+       ```shell
+       venv/bin/python3 main.py
+       ```
 
-## config.yml
+# config.yml
 
 > This is where you specify the files/folders that are included in the compressed file.  
 > Also the place where compressed file saved to.
@@ -89,7 +109,7 @@ console_log_level: INFO
 # All files and folders will be included
 # in the final compressed file.
 include:
-  - "./test"
+  - '/path/to/compress'
 
 # Where to save this backup.
 # Must be a path (program creates dirs if path not exist)
@@ -99,10 +119,14 @@ destination: "./backups"
 # Must be in absolute form.
 # If '/path/to/ignore' is listed, any sub-folders and files
 # within that directory will be ignored.
-ignore:
-  - '/path/to/ignore1'
-  - '/path/to/ignore2'
-  - '/path/to/ignore3'
+# Since v0.0.3, you can use regular expression to ignore files.
+# For regex to match the entire path, use colons:
+# - ':ignore-\d+:'
+# 'ignore-1' matches the pattern but not '/path/to/ignore-1'
+# For regex to find matches in a string, use semi-colon:
+# - ';ignore-\d+;'
+# will match both 'ignore-1' and '/path/to/ignore-1'
+ignore: []
 
 old_backups:
   # How many backups should I keep (default: 5, 0 means unlimited)
@@ -125,10 +149,48 @@ arguments:
   # Default level is 3
   # More at: https://python-zstandard.readthedocs.io/en/latest/compressor.html#zstdcompressor
   level: 3
-  # How many should the algo use.
+  # How many cores should the algo use.
   # More threads equals faster compression time.
   # 0 will use all threads (also the default)
   threads: 4
+
+settings:
+  # Program will attempt to write to compressed
+  # file this many bytes per cycle.
+  # Higher number can cause I/O bottleneck
+  # If you're unsure, leave it at default 1024
+  write_chunk: 1024   # bytes
+  # Settings related to progress bar
+  # This function is still in Beta
+  progress_bar:
+    # Enabling progress bar may
+    # result in slower write.
+    enabled: true
+
+# Send compressed file to remote server
+remote_storage:
+  enabled: false
+  # As of version 0.1.0, only SFTP is supported
+  type: SFTP
+  server:
+    host: '127.0.0.1'
+    port: 22
+  credentials:
+    # Available protocols: PASSWORD, DSS, ED25519, RSA, ECDSA
+    # PASSWORD requires presence of 'password' field,
+    # others require 'keypath' and 'passphrase'
+    # Leave 'passphrase' empty if key isn't encrypted with one.
+    protocol: 'ED25519'
+    # Automatically switch to public/private key
+    # once 'private_key' is filled out.
+    username: username
+    keypath: ''
+    passphrase: ''
+  # Path must contain name you want the file to be
+  # '{}' will be replaced by the original name.
+  remote_path: '/remote/location/compressed.zstd'
+  # File won't be deleted if error occurs during transfer
+  delete_after_transfer: false
 ```
 
 # Issues

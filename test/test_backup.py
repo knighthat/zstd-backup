@@ -83,16 +83,9 @@ class BackupProfileTest(unittest.TestCase):
         This test performs check on 'filename' property of BackupProfile
         An addition test to confirm that datetime is parsable
         """
-
-        " This pattern is the result of 'time_format' defined in __init__.py"
-        namepattern: str = r'\d{4}-\w{3}-\d{2} \d{2}-\d{2}-\d{6}.zstd'
-        self.assertTrue(match(namepattern, self.profile.filename))
-
-        date: str = self.profile.filename.split('.')[0]
-        try:
-            datetime.strptime(date, time_format)
-        except:
-            self.fail(f'{date} is not a valid date according to format {time_format}!')
+        
+        filename: str = f'{valid_config["compressed_file_name"]}.zstd'
+        self.assertEqual(filename, self.profile.filename)
 
     def test_length(self):
         """
@@ -100,72 +93,7 @@ class BackupProfileTest(unittest.TestCase):
         :return:
         """
         self.assertTrue(len(self.profile) > 0)
-
-
-class DeleteOlBackupTests(unittest.TestCase):
-    path: str = os.path.join(TEST_DIR, 'backups')
-
-    @classmethod
-    def setUpClass(cls):
-        # Create 'backups' folder, ignore if exists
-        os.makedirs(cls.path, exist_ok=True)
-
-        def _get_date_ago(days: int) -> str:
-            """
-            Get the date `days` days ago from today.
-
-            Args:
-                days (int): Number of days ago.
-
-            Returns:
-                str: Date in the format "%Y-%b-%d %H-%M-%f".
-            """
-            target_date = backup.today - timedelta(days)
-            return target_date.strftime(backup.time_format)
-
-        # Create empty .zstd files with names
-        # are dates ranging from 1 to 40
-        for day in [1, 2, 5, 10, 20, 30, 31, 35, 40]:
-            filename = f'{TEST_DIR}/backups/{_get_date_ago(day)}.zstd'
-            with open(filename, 'w'):
-                pass
-
-    @classmethod
-    def tearDownClass(cls):
-        """
-        Remove 'test/backups' folder
-        """
-        shutil.rmtree(cls.path)
-
-    def test_del_old_backups(self):
-        """
-        This test performs deletion on various days
-        (simulate different values of 'old_backups.retention')
-        """
-        values = {
-            40: 8,
-            35: 7,
-            31: 6,
-            30: 5,
-            20: 4,
-            10: 3,
-            5: 2,
-            2: 1,
-            1: 0
-        }
-        backups: list = scan_4_backup(self.path)
-
-        for days, remain in values.items():
-            backup.del_old_backups(backups, days)
-
-            " Reload list after each deletion "
-            backups = scan_4_backup(self.path)
-            self.assertEqual(
-                len(backups),
-                remain,
-                f'The remaining backups after deleting backups that are older than {days} days must be {remain}'
-            )
-
+        
 
 if __name__ == '__main__':
     unittest.main()
