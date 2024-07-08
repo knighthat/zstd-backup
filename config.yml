@@ -13,7 +13,7 @@ destination: "./backups"
 # Name of the compressed file.
 # It shouldn't contain extension, one will be assigned
 # by the time it's finished.
-compressed_file_name: 'zstd-backup'
+compressed_file_name: 'Custome Name %Y-%b-%d %H-%M-%S'
 
 # Ignore all files that start with 1 of the paths below.
 # Must be in absolute form.

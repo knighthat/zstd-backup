@@ -5,6 +5,7 @@ import re
 
 from src import today, time_format, PROJECT_DIR, dir, logger
 from src.config import Configuration
+from src.utils.type import verify
 
 
 match_all_pattern = re.compile(r'^:[^:]+:$')
@@ -41,11 +42,25 @@ class BackupProfile:
         #
         #   Name of compressed file
         #
-        self.filename = f'{config.filename}.zstd'
+        self._filename: str
+        self._setFileName(config.filename)
 
     @property
     def size(self):
         return self.__len__()
+    
+    @property
+    def filename(self) -> str:
+        return self._filename
+    
+    def _setFileName(self, value) -> None:
+        fromfile: str = verify(value, str)
+        
+        # Replace datetime placeholders
+        filename = today.strftime(fromfile)
+        
+        self._filename = f'{filename}.zstd'
+        
 
     def _set_children(self, paths: set) -> None:
         """
