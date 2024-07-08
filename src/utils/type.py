@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Union
 
 from src.logger import debug
 
-T = TypeVar('T', bound=[str, int, float, bool, list, set, tuple, dict])
+T = TypeVar('T', bound=Union[str, int, float, bool, list, set, tuple, dict])
 
 
 def verify(arg: Any, _type: T | tuple[T, ...], default: Any = None, force_cast: bool = False) -> T.__name__:
